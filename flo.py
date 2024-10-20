@@ -232,8 +232,12 @@ if 'flow_chart_steps' in st.session_state:
         
         # Add "Add Step" button after each step
         if st.button(f"Add Step after Step {i+1}"):
-            edited_steps.append({"title": "", "description": ""})
-    
+            edited_steps.insert(i+1, {"title": "", "description": ""})
+
+        # Add "Delete Step" button to remove a step
+        if st.button(f"Delete Step {i+1}"):
+            edited_steps.pop(i)
+
     st.session_state['flow_chart_steps'] = edited_steps  # Update session state with edited steps
 
     # Render the flow chart HTML
