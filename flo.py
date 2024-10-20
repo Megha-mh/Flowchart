@@ -229,10 +229,10 @@ if 'flow_chart_steps' in st.session_state:
         title_input = st.text_input(f"Step {i+1} Title", value=step['title'], key=f"title_{i}")
         description_input = st.text_area(f"Step {i+1} Description", value=step['description'], key=f"description_{i}")
         edited_steps.append({"title": title_input, "description": description_input})
-    
-    # Add button to allow users to add an empty step
-    if st.button("Add Step"):
-        edited_steps.append({"title": "", "description": ""})
+        
+        # Add "Add Step" button after each step
+        if st.button(f"Add Step after Step {i+1}"):
+            edited_steps.append({"title": "", "description": ""})
     
     st.session_state['flow_chart_steps'] = edited_steps  # Update session state with edited steps
 
