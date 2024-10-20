@@ -24,7 +24,7 @@ def generate_flow_chart_steps(explanation: str) -> List[FlowChartStep]:
                 {
                     "role": "system",
                     "content": "Please provide a in very detailed step-by-step guide with 6 to 10 steps. Each step should have a title and a description, description shall include some key points in and it shall have around 4-5 points for each title in description detailed line without new line. Make at least 10 sentences.\n"
-                            f"The JSON object must use the schema: {json.dumps(FlowChartStep.model_json_schema(), indent=2)}",
+                                f"The JSON object must use the schema: {json.dumps(FlowChartStep.model_json_schema(), indent=2)}",
                 },
                 {
                     "role": "user",
@@ -229,6 +229,10 @@ if 'flow_chart_steps' in st.session_state:
         title_input = st.text_input(f"Step {i+1} Title", value=step['title'], key=f"title_{i}")
         description_input = st.text_area(f"Step {i+1} Description", value=step['description'], key=f"description_{i}")
         edited_steps.append({"title": title_input, "description": description_input})
+    
+    # Add button to allow users to add an empty step
+    if st.button("Add Step"):
+        edited_steps.append({"title": "", "description": ""})
     
     st.session_state['flow_chart_steps'] = edited_steps  # Update session state with edited steps
 
