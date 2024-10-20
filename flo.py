@@ -5,8 +5,13 @@ import streamlit as st
 import streamlit.components.v1 as components
 from groq import Groq
 from typing import List
+import os
 
-groq = Groq(api_key="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")
+# Fetching the API key from the environment variable
+groq_api_key = os.getenv("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")
+
+# Initializing the Groq object with the API key
+groq = Groq(api_key=groq_api_key)
 
 class FlowChartStep(BaseModel):
     title: str
