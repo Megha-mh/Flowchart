@@ -192,7 +192,8 @@ class RenderHTML:
 # Streamlit UI
 
 # Adding the logo at the top of the Streamlit page
-st.markdown('<div style="text-align: center;"><img src="https://raw.githubusercontent.com/Megha-mh/Flowchart/blob/main/Full%20Logo%20(1).png" alt="Company Logo" style="width: 200px;"/></div>', unsafe_allow_html=True)
+st.markdown('<div style="text-align: center;"><img src="https://raw.githubusercontent.com/Megha-mh/Flowchart/main/Full%20Logo%20(1).png" alt="Company Logo" style="width: 200px;"/></div>', unsafe_allow_html=True)
+
 
 st.title("Business Flow Chart Renderer")
 
