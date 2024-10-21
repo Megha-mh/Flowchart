@@ -157,7 +157,7 @@ class RenderHTML:
 
                 <!-- Adding the logo at the top -->
                 <div style="text-align: center; margin-bottom: 30px;">
-                    <img src="https://raw.githubusercontent.com/Megha-mh/CT-registration-deadline-calculator/main/Full%20Logo%20(1).png" alt="Company Logo" style="max-width: 150px; height: auto;">
+                    <img src="https://raw.githubusercontent.com/Megha-mh/Flowchart/blob/main/Full%20Logo%20(1).png" alt="Company Logo" style="max-width: 150px; height: auto;">
                 </div>
 
                 <h3 style="margin-top: 20px; text-align: center;">{self.name}</h3>
