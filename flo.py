@@ -6,18 +6,6 @@ import streamlit.components.v1 as components
 from groq import Groq
 from typing import List
 import os
-from PIL import Image
-
-# Add your logo from GitHub at the top of the Streamlit app
-st.set_page_config(page_title="Business Flow Chart Renderer", page_icon="🌐")
-
-# GitHub-hosted logo URL
-GITHUB_LOGO_URL = "https://raw.githubusercontent.com/Megha-mh/Flowchart/main/logo.png"
-
-# Display the logo at the top (directly using the GitHub raw URL)
-st.image(GITHUB_LOGO_URL, width=150)  # Adjust width as necessary
-
-st.title("Business Flow Chart Renderer")
 
 # Fetching the API key from the environment variable
 groq_api_key = os.getenv("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")
@@ -157,9 +145,10 @@ class RenderHTML:
                         .set({{
                             margin: 1,
                             filename: 'business_flow_chart.pdf',
-                            html2canvas: {{ scale: 2 }}},
+                            html2canvas: {{ scale: 2 }},
                             jsPDF: {{ format: 'a4', orientation: 'portrait' }}
-                        }}).save();
+                        }})
+                        .save();
                 }}
             </script>
         </head>
