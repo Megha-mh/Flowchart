@@ -154,12 +154,6 @@ class RenderHTML:
         </head>
         <body style="font-family: Arial, sans-serif; line-height: 1.6; padding: 20px; max-width: 210mm; margin: 0 auto;">
             <div id="pdf-content" style="padding: 50px;">
-
-                <!-- Adding the logo at the top -->
-                <div style="text-align: center; margin-bottom: 30px;">
-                    <img src="https://raw.githubusercontent.com/Megha-mh/Flowchart/blob/main/Full%20Logo%20(1).png" alt="Company Logo" style="max-width: 150px; height: auto;">
-                </div>
-
                 <h3 style="margin-top: 20px; text-align: center;">{self.name}</h3>
                 <h5>Date: {date.today().strftime("%d/%m/%Y")}</h5>
                 <h4>Subject: Business Flow Chart</h4>
@@ -196,6 +190,10 @@ class RenderHTML:
 
 
 # Streamlit UI
+
+# Adding the logo at the top of the Streamlit page
+st.markdown('<div style="text-align: center;"><img src="https://raw.githubusercontent.com/Megha-mh/Flowchart/blob/main/Full%20Logo%20(1).png" alt="Company Logo" style="width: 200px;"/></div>', unsafe_allow_html=True)
+
 st.title("Business Flow Chart Renderer")
 
 # Input fields
