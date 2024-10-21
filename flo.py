@@ -190,10 +190,6 @@ class RenderHTML:
 
 
 # Streamlit UI
-
-# Adding a placeholder logo at the top of the Streamlit page
-st.markdown('<div style="text-align: center;"><img src="https://via.placeholder.com/200" alt="Company Logo" style="width: 200px;"/></div>', unsafe_allow_html=True)
-
 st.title("Business Flow Chart Renderer")
 
 # Input fields
