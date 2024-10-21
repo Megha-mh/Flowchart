@@ -172,13 +172,13 @@ st.title("Business Flow Chart Renderer")
 # Input fields
 name_input = st.text_input("Enter the name of the company:", "One Planet Travel and Events LLC")
 input_arrowchart_content1 = st.text_input('Enter the content For BUSINESS ACTIVITY', key="input_arrowchart_content1")
-input_arrowchart_content2 = st.text_input('Enter the content For CUSTOMERS', key="input_arrowchart_content2")
+input_arrowchart_content2 = st.text_input('Billing system (how payment is collected from customers)', key="input_arrowchart_content2")
 input_arrowchart_content3 = st.text_input('Enter the content For PLACE OF SUPPLY', key="input_arrowchart_content3")
 input_arrowchart_content4 = st.text_input('Enter the content For EXPENSES AND COST OF SALES', key="input_arrowchart_content4")
 
 arrow_chart = {
     "title1": "BUSINESS",
-    "title2": "CUSTOMERS",
+    "title2": "Billing System",
     "title3": "PLACE OF SUPPLY",
     "title4": "EXPENSES AND COST OF SALES",
     "content1": input_arrowchart_content1,
