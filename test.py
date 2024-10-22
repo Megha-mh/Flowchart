@@ -42,6 +42,15 @@ def modify_input_using_chatgpt(prompt: str) -> str:
         st.error(f"Error: {str(e)}")
         return prompt
 
+def sanitize_input(text: str, replace_commas: bool = False) -> str:
+    """
+    This function sanitizes the input text, removing extra spaces and optionally replacing commas with line breaks.
+    """
+    text = text.strip()  # Remove leading/trailing whitespace
+    if replace_commas:
+        text = text.replace(",", "<br>")  # Replace commas with line breaks for better readability
+    return text
+
 class RenderHTML:
     def __init__(self, name, description, flow_chart_steps, arrow_chart):
         self.name = name
@@ -72,9 +81,9 @@ class RenderHTML:
             flow_chart_html += f"""
                 <div style="padding: 0px 0px 0px 50px;">
                     <div style="max-width: 90%; padding: 10px 10px 10px 30px; background-color: #f0f0f0; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); text-align: center; position: relative; page-break-inside: avoid;">
-                        <h4 style="margin: 5px 0; color: #333;">{step['title']}</h4>
+                        <h4 style="margin: 5px 0; color: #333;">{sanitize_input(step['title'])}</h4>
                         <div style="margin-top: 5px; font-size: 0.9em; color: #555; text-align: left;">
-                            {step['description'].replace('*', '') if isinstance(step['description'], str) else str(step['description']).replace('*', '').replace('[', '').replace(']', '')}
+                            {sanitize_input(step['description']) if isinstance(step['description'], str) else str(step['description'])}
                         </div>
                     </div>
                 </div>
@@ -87,16 +96,16 @@ class RenderHTML:
             return ""  # If all fields are blank, return an empty string (i.e., skip rendering)
 
         blue_box_content = [
-            self.arrow_chart.get('title1', ''),
-            self.arrow_chart.get('title2', ''),
-            self.arrow_chart.get('title3', ''),
-            self.arrow_chart.get('title4', '')
+            sanitize_input(self.arrow_chart.get('title1', '')),
+            sanitize_input(self.arrow_chart.get('title2', '')),
+            sanitize_input(self.arrow_chart.get('title3', '')),
+            sanitize_input(self.arrow_chart.get('title4', ''))
         ]
         grey_box_content = [
-            self.arrow_chart.get('content1', ''),
-            self.arrow_chart.get('content2', ''),
-            self.arrow_chart.get('content3', ''),
-            self.arrow_chart.get('content4', '')
+            sanitize_input(self.arrow_chart.get('content1', ''), replace_commas=True),
+            sanitize_input(self.arrow_chart.get('content2', ''), replace_commas=True),
+            sanitize_input(self.arrow_chart.get('content3', ''), replace_commas=True),
+            sanitize_input(self.arrow_chart.get('content4', ''), replace_commas=True)
         ]
 
         category_chart_html = ""
@@ -108,7 +117,7 @@ class RenderHTML:
                             {blue_box_content[i]}
                         </div>
                         <div style="width: 230px; height: 130px; background-color: #D3D3D3; margin-left: 0px; display: flex; align-items: center; justify-content: flex-start; color: black; font-size: 12px; padding-left: 10px; line-height: 1.5;">
-                            {grey_box_content[i].replace(',', '<br>')}
+                            {grey_box_content[i]}
                         </div>
                         <div style="width: 0; height: 0; border-top: 80px solid transparent; border-bottom: 80px solid transparent; border-left: 70px solid #D3D3D3;"></div>
                     </div>
@@ -131,7 +140,7 @@ class RenderHTML:
 
         # Generate dynamic introduction based on modified description input
         introduction = f"""
-        <p>The "{self.name}" specializes in {self.description}. This includes managing operations in several areas and ensuring the smooth execution of business processes. The company is focused on {self.description} to diversify its revenue streams and grow its market share.</p>
+        <p>The "{sanitize_input(self.name)}" specializes in {sanitize_input(self.description)}. This includes managing operations in several areas and ensuring the smooth execution of business processes. The company is focused on {sanitize_input(self.description)} to diversify its revenue streams and grow its market share.</p>
         """
 
         html_content = f"""
@@ -159,7 +168,7 @@ class RenderHTML:
         </head>
         <body style="font-family: Arial, sans-serif; line-height: 1.6; padding: 20px; max-width: 210mm; margin: 0 auto;">
             <div id="pdf-content" style="padding: 50px;">
-                <h3 style="margin-top: 20px; text-align: center;">{self.name}</h3>
+                <h3 style="margin-top: 20px; text-align: center;">{sanitize_input(self.name)}</h3>
                 <h5>Date: {date.today().strftime("%d/%m/%Y")}</h5>
                 <h4>Subject: Business Flow Chart</h4>
                 
