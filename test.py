@@ -43,10 +43,11 @@ def generate_flow_chart_steps(explanation: str) -> List[FlowChartStep]:
         return []
 
 class RenderHTML:
-    def __init__(self, name, flow_chart_steps, arrow_chart):
+    def __init__(self, name, flow_chart_steps, arrow_chart, introduction):
         self.name = name
         self.flow_chart_steps = flow_chart_steps
         self.arrow_chart = arrow_chart
+        self.introduction = introduction  # New introduction field
 
     def generate_flow_chart(self):
         flow_chart_html = ""
@@ -102,7 +103,7 @@ class RenderHTML:
                 """
         return category_chart_html
 
-    def generate_html(self, company_description):
+    def generate_html(self):
         flow_chart_html = self.generate_flow_chart()
         arrow_chart_html = self.generate_arrow_chart()
 
@@ -142,7 +143,7 @@ class RenderHTML:
                 <h5>Date: {date.today().strftime("%d/%m/%Y")}</h5>
                 <h4>Subject: Business Flow Chart</h4>
                 <div style="font-size: 0.9em;">
-                    <p>{company_description}<p>  <!-- Use the dynamic company description here -->
+                    <p>{self.introduction}</p>  <!-- Dynamic introduction input -->
                 </div>
                 
                 <!-- Arrow Chart with Page Break -->
@@ -171,7 +172,7 @@ st.title("Business Flow Chart Renderer")
 
 # Input fields
 name_input = st.text_input("Enter the name of the company:", "One Planet Travel and Events LLC")
-company_description_input = st.text_area("Enter the description of the company:", "Provide a detailed description of the company and its business activities.")
+company_intro_input = st.text_area("Enter the introduction for the company:")  # New introduction input field
 input_arrowchart_content1 = st.text_input('Enter the content For BUSINESS ACTIVITY', key="input_arrowchart_content1")
 input_arrowchart_content2 = st.text_input('Billing system (how payment is collected from customers)', key="input_arrowchart_content2")
 input_arrowchart_content3 = st.text_input('Enter the content For PLACE OF SUPPLY', key="input_arrowchart_content3")
@@ -221,7 +222,8 @@ if 'flow_chart_steps' in st.session_state:
         html_generator = RenderHTML(
             name=name_input,
             flow_chart_steps=st.session_state['flow_chart_steps'],
-            arrow_chart=arrow_chart
+            arrow_chart=arrow_chart,
+            introduction=company_intro_input  # Pass the dynamic introduction
         )
-        html_output = html_generator.generate_html(company_description_input)
+        html_output = html_generator.generate_html()
         components.html(html_output, height=800, scrolling=True)
