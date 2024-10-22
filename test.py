@@ -17,30 +17,30 @@ class FlowChartStep(BaseModel):
     title: str
     description: str
 
-def generate_flow_chart_steps(explanation: str) -> List[FlowChartStep]:
+def modify_input_using_chatgpt(prompt: str) -> str:
+    """
+    This function modifies user input using Groq/ChatGPT to rephrase or enhance it.
+    """
     try:
-        chat_completion = groq.chat.completions.create(
+        response = groq.chat.completions.create(
+            model="llama3-8b-8192",
             messages=[
                 {
                     "role": "system",
-                    "content": "Please provide a in very detailed step-by-step guide with 6 to 10 steps. Each step should have a title and a description, description shall include some key points in and it shall have around 4-5 points for each title in description detailed line without new line. Make at least 10 sentences.\n"
-                                f"The JSON object must use the schema: {json.dumps(FlowChartStep.model_json_schema(), indent=2)}",
+                    "content": "You are an assistant that rephrases and enhances text. Please rephrase and enhance the following input to sound more professional and polished.",
                 },
                 {
                     "role": "user",
-                    "content": explanation,
+                    "content": prompt,
                 },
             ],
-            model="llama3-8b-8192",
-            temperature=0,
-            stream=False,
-            response_format={"type": "json_object"},
+            temperature=0.7,
         )
-        steps = json.loads(chat_completion.choices[0].message.content)
-        return steps['steps']
+        # Return the enhanced text from the response
+        return response.choices[0].message.content.strip()
     except Exception as e:
-        st.error('No input given')
-        return []
+        st.error(f"Error: {str(e)}")
+        return prompt
 
 class RenderHTML:
     def __init__(self, name, description, flow_chart_steps, arrow_chart):
@@ -48,6 +48,18 @@ class RenderHTML:
         self.description = description  # This will be dynamically inserted
         self.flow_chart_steps = flow_chart_steps
         self.arrow_chart = arrow_chart
+
+    def modify_inputs_using_gpt(self):
+        # Modify the company name (capitalize first letter of each word)
+        self.name = modify_input_using_chatgpt(f"Rephrase the company name: {self.name}")
+        
+        # Modify the description using GPT (enhance or rephrase it)
+        self.description = modify_input_using_chatgpt(f"Enhance and polish the company description: {self.description}")
+
+        # Modify arrow chart titles and content by enhancing or rephrasing them using GPT
+        for key in self.arrow_chart:
+            if "title" in key or "content" in key:
+                self.arrow_chart[key] = modify_input_using_chatgpt(f"Rephrase this content to sound more professional: {self.arrow_chart[key]}")
 
     def generate_flow_chart(self):
         flow_chart_html = ""
@@ -104,6 +116,9 @@ class RenderHTML:
         return category_chart_html
 
     def generate_html(self):
+        # Apply modifications to inputs using GPT
+        self.modify_inputs_using_gpt()
+
         flow_chart_html = self.generate_flow_chart()
         arrow_chart_html = self.generate_arrow_chart()
 
@@ -114,7 +129,7 @@ class RenderHTML:
         </div>
         """ if arrow_chart_html else ""
 
-        # Generate dynamic introduction based on description input
+        # Generate dynamic introduction based on modified description input
         introduction = f"""
         <p>The "{self.name}" specializes in {self.description}. This includes managing operations in several areas and ensuring the smooth execution of business processes. The company is focused on {self.description} to diversify its revenue streams and grow its market share.</p>
         """
