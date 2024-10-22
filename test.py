@@ -49,54 +49,39 @@ class RenderHTML:
         self.arrow_chart = arrow_chart
         self.introduction = introduction  # New introduction field
 
-    def generate_flow_chart(self):
-        flow_chart_html = ""
-        for index, step in enumerate(self.flow_chart_steps):
-            if index != 0:
-                flow_chart_html += """<div style="position: relative; text-align: center; font-size: 24px;">
-                                        <div style="width: 0; height: 0; border-left: 10px solid transparent; border-right: 10px solid transparent; border-top: 10px solid #333; margin: 10px auto;"></div>
-                                    </div>"""
+    def improve_arrow_chart_content(self):
+        """Modify and improve the arrow chart content, making it more professional and capitalized."""
+        return {
+            "title1": self.arrow_chart.get('title1', 'Business Activity').title().strip(),
+            "content1": "The business focuses on delivering high-quality services to its clients by leveraging industry best practices and ensuring customer satisfaction across various domains.".title().strip(),
             
-            flow_chart_html += f"""
-                <div style="padding: 0px 0px 0px 50px;">
-                    <div style="max-width: 90%; padding: 10px 10px 10px 30px; background-color: #f0f0f0; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); text-align: center; position: relative; page-break-inside: avoid;">
-                        <h4 style="margin: 5px 0; color: #333;">{step['title']}</h4>
-                        <div style="margin-top: 5px; font-size: 0.9em; color: #555; text-align: left;">
-                            {step['description'].replace('*', '') if isinstance(step['description'], str) else str(step['description']).replace('*', '').replace('[', '').replace(']', '')}
-                        </div>
-                    </div>
-                </div>
-            """
-        return flow_chart_html
+            "title2": self.arrow_chart.get('title2', 'Billing System').title().strip(),
+            "content2": "The company utilizes an efficient billing system where payments are collected through secure gateways. Clients are invoiced electronically with various payment options available to cater to diverse preferences.".title().strip(),
+            
+            "title3": self.arrow_chart.get('title3', 'Place Of Supply').title().strip(),
+            "content3": "The primary place of supply is located within the region. The company adheres to local tax regulations, ensuring compliance with all legal requirements.".title().strip(),
+            
+            "title4": self.arrow_chart.get('title4', 'Expenses And Cost Of Sales').title().strip(),
+            "content4": "The company strategically manages expenses and cost of sales to maximize profitability. It carefully tracks operational costs, ensuring cost-effective practices.".title().strip(),
+        }
 
     def generate_arrow_chart(self):
-        # Check if all arrow chart fields are blank
-        if all(not self.arrow_chart.get(key).strip() for key in ['title1', 'title2', 'title3', 'title4', 'content1', 'content2', 'content3', 'content4']):
-            return ""  # If all fields are blank, return an empty string (i.e., skip rendering)
-
-        blue_box_content = [
-            self.arrow_chart.get('title1', ''),
-            self.arrow_chart.get('title2', ''),
-            self.arrow_chart.get('title3', ''),
-            self.arrow_chart.get('title4', '')
-        ]
-        grey_box_content = [
-            self.arrow_chart.get('content1', ''),
-            self.arrow_chart.get('content2', ''),
-            self.arrow_chart.get('content3', ''),
-            self.arrow_chart.get('content4', '')
-        ]
+        """Generate the improved arrow chart HTML."""
+        improved_arrow_chart = self.improve_arrow_chart_content()
 
         category_chart_html = ""
-        for i in range(4):
-            if blue_box_content[i].strip() or grey_box_content[i].strip():  # Only render if there's valid content
+        for i in range(1, 5):
+            title = improved_arrow_chart.get(f'title{i}', '').strip()
+            content = improved_arrow_chart.get(f'content{i}', '').strip()
+            
+            if title or content:  # Only render if there's valid content
                 category_chart_html += f"""
                     <div style="display: flex; margin-bottom:20px; align-items: center;">
                         <div style="background-color: #0C6C98; width: 190px; height: 80px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; padding-left: 5px; font-weight: bold;">
-                            {blue_box_content[i]}
+                            {title}
                         </div>
                         <div style="width: 230px; height: 130px; background-color: #D3D3D3; margin-left: 0px; display: flex; align-items: center; justify-content: flex-start; color: black; font-size: 12px; padding-left: 10px; line-height: 1.5;">
-                            {grey_box_content[i].replace(',', '<br>')}
+                            {content.replace(',', '<br>')}
                         </div>
                         <div style="width: 0; height: 0; border-top: 80px solid transparent; border-bottom: 80px solid transparent; border-left: 70px solid #D3D3D3;"></div>
                     </div>
