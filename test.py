@@ -185,7 +185,7 @@ class RenderHTML:
 st.title("Business Flow Chart Renderer")
 
 # Input fields
-name_input = st.text_input("Enter the name of the company:", "One Planet Travel and Events LLC")
+name_input = st.text_input("Enter the name of the company:", "")
 company_intro_input = st.text_area("Enter the introduction for the company:")  # New introduction input field
 input_arrowchart_content1 = st.text_input('Enter the content For BUSINESS ACTIVITY', key="input_arrowchart_content1")
 input_arrowchart_content2 = st.text_input('Billing system (how payment is collected from customers)', key="input_arrowchart_content2")
