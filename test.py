@@ -125,42 +125,42 @@ class RenderHTML:
             <div style="display: flex; flex-direction: column; align-items: center;">
         """
 
-        # New flowchart content: Highlight interactions between departments
+        # New flowchart content: Reflecting the business process
         flow_chart_html += """
         <div style="display: flex; align-items: center; margin-bottom: 20px;">
             <div style="border: 2px solid #0C6C98; padding: 20px; border-radius: 10px; width: 150px; text-align: center;">
-                Sales Department
+                How the Business Works
             </div>
             <div style="flex-grow: 1; border-top: 2px solid #0C6C98; margin: 0 10px;"></div>
             <div style="border: 2px solid #0C6C98; padding: 20px; border-radius: 10px; width: 250px; text-align: left;">
-                Leads are generated and sent to Marketing for campaign development.
+                The company defines its operational model and core offerings.
             </div>
         </div>
         <div style="display: flex; align-items: center; margin-bottom: 20px;">
             <div style="border: 2px solid #0C6C98; padding: 20px; border-radius: 10px; width: 150px; text-align: center;">
-                Marketing Department
+                Providing Services
             </div>
             <div style="flex-grow: 1; border-top: 2px solid #0C6C98; margin: 0 10px;"></div>
             <div style="border: 2px solid #0C6C98; padding: 20px; border-radius: 10px; width: 250px; text-align: left;">
-                Develops marketing campaigns and forwards them to Finance for budgeting.
+                Services are delivered to customers based on business agreements.
             </div>
         </div>
         <div style="display: flex; align-items: center; margin-bottom: 20px;">
             <div style="border: 2px solid #0C6C98; padding: 20px; border-radius: 10px; width: 150px; text-align: center;">
-                Finance Department
+                Transfer of Product and Supplies
             </div>
             <div style="flex-grow: 1; border-top: 2px solid #0C6C98; margin: 0 10px;"></div>
             <div style="border: 2px solid #0C6C98; padding: 20px; border-radius: 10px; width: 250px; text-align: left;">
-                Allocates budget and sends approval to Operations for execution.
+                Products and supplies are transferred to the customers or to delivery agents.
             </div>
         </div>
         <div style="display: flex; align-items: center; margin-bottom: 20px;">
             <div style="border: 2px solid #0C6C98; padding: 20px; border-radius: 10px; width: 150px; text-align: center;">
-                Operations Department
+                Receiving the Payment
             </div>
             <div style="flex-grow: 1; border-top: 2px solid #0C6C98; margin: 0 10px;"></div>
             <div style="border: 2px solid #0C6C98; padding: 20px; border-radius: 10px; width: 250px; text-align: left;">
-                Executes the plan, delivering the product/service to the customer.
+                Payment is processed through the billing system and finalized.
             </div>
         </div>
         """
