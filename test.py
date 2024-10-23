@@ -76,11 +76,13 @@ class RenderHTML:
             "title2": self.arrow_chart.get('title2', 'Billing System').title().strip(),
             "content2": "The company utilizes an efficient billing system where payments are collected through secure gateways. Clients are invoiced electronically with various payment options available.".title().strip(),
             
+            # Dynamic Place of Supply with elaboration
             "title3": self.arrow_chart.get('title3', 'Place Of Supply').title().strip(),
-            "content3": "The primary place of supply is located within the region. The company adheres to local tax regulations.".title().strip(),
+            "content3": f"The primary place of supply is {self.arrow_chart.get('content3')}. This location is crucial for ensuring compliance with local tax regulations.".title().strip(),
             
+            # Dynamic Expenses and Cost of Sales with elaboration
             "title4": self.arrow_chart.get('title4', 'Expenses And Cost Of Sales').title().strip(),
-            "content4": "The company strategically manages expenses and cost of sales to maximize profitability. It tracks operational costs carefully.".title().strip(),
+            "content4": f"The company manages expenses such as {self.arrow_chart.get('content4')}, ensuring cost-effective practices to maximize profitability.".title().strip(),
         }
 
     def generate_arrow_chart(self):
@@ -206,8 +208,8 @@ name_input = st.text_input("Enter the name of the company:", "")
 company_intro_input = st.text_area("Enter the introduction for the company:")
 input_arrowchart_content1 = st.text_input('Enter the content For BUSINESS ACTIVITY', key="input_arrowchart_content1")
 input_arrowchart_content2 = st.text_input('Billing system (how payment is collected from customers)', key="input_arrowchart_content2")
-input_arrowchart_content3 = st.text_input('Enter the content For PLACE OF SUPPLY', key="input_arrowchart_content3")
-input_arrowchart_content4 = st.text_input('Enter the content For EXPENSES AND COST OF SALES', key="input_arrowchart_content4")
+input_arrowchart_content3 = st.text_input('Enter the Place of Supply', key="input_arrowchart_content3")  # Updated Place of Supply
+input_arrowchart_content4 = st.text_input('Enter the content For EXPENSES AND COST OF SALES', key="input_arrowchart_content4")  # Updated for expenses
 
 arrow_chart = {
     "title1": "BUSINESS",
@@ -216,8 +218,8 @@ arrow_chart = {
     "title4": "EXPENSES AND COST OF SALES",
     "content1": input_arrowchart_content1,
     "content2": input_arrowchart_content2,
-    "content3": input_arrowchart_content3,
-    "content4": input_arrowchart_content4
+    "content3": input_arrowchart_content3,  # Dynamically pass the Place of Supply content
+    "content4": input_arrowchart_content4   # Dynamically pass the Expenses and Cost of Sales content
 }
 
 st.subheader("Flow Chart Steps")
