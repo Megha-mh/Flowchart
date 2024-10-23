@@ -6,8 +6,6 @@ import streamlit.components.v1 as components
 from groq import Groq
 from typing import List
 import os
-from xhtml2pdf import pisa
-from io import BytesIO
 
 # Fetching the API key from the environment variable
 groq_api_key = os.getenv("GROQ_API_KEY")
@@ -64,10 +62,6 @@ def generate_flow_chart_steps(explanation: str) -> List[FlowChartStep]:
 
 def rephrase_business_activity(activity: str) -> str:
     """Rephrase the business activity to make it clearer and more formal."""
-    # Mapping common phrases to more formal explanations
-    if "website" in activity.lower() and "digital" in activity.lower():
-        return "The business specializes in providing website development and digital services, offering tailored solutions to meet client needs."
-    # You can add more conditional rephrasing based on different inputs.
     return activity  # Return as-is if no rephrasing is found.
 
 class RenderHTML:
@@ -80,20 +74,14 @@ class RenderHTML:
     def improve_arrow_chart_content(self):
         """Modify and improve the arrow chart content, making it more professional and capitalized."""
         return {
-            # Rephrase the input for Business Activity to ensure clarity and formality
             "title1": self.arrow_chart.get('title1', 'Business Activity').title().strip(),
-            "content1": rephrase_business_activity(self.business_activity),  # Use rephrase function here
-            
+            "content1": rephrase_business_activity(self.business_activity),
             "title2": self.arrow_chart.get('title2', 'Billing System').title().strip(),
-            "content2": "The company utilizes an efficient billing system where payments are collected through secure gateways. Clients are invoiced electronically with various payment options available.".strip(),
-            
-            # Dynamic Place of Supply with elaboration
+            "content2": "The company utilizes an efficient billing system where payments are collected through secure gateways. Clients are invoiced electronically with various payment options available.".title().strip(),
             "title3": self.arrow_chart.get('title3', 'Place Of Supply').title().strip(),
-            "content3": f"The primary place of supply is {self.arrow_chart.get('content3')}. This location is crucial for ensuring compliance with local tax regulations.".strip(),
-            
-            # Dynamic Expenses and Cost of Sales with elaboration
+            "content3": f"The primary place of supply is {self.arrow_chart.get('content3')}. This location is crucial for ensuring compliance with local tax regulations.".title().strip(),
             "title4": self.arrow_chart.get('title4', 'Expenses And Cost Of Sales').title().strip(),
-            "content4": f"The company manages expenses such as {self.arrow_chart.get('content4')}, ensuring cost-effective practices to maximize profitability.".strip(),
+            "content4": f"The company manages expenses such as {self.arrow_chart.get('content4')}, ensuring cost-effective practices to maximize profitability.".title().strip(),
         }
 
     def generate_arrow_chart(self):
@@ -165,56 +153,26 @@ class RenderHTML:
         <html lang="en">
         <head>
             <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>Business Flow Chart</title>
-            <style>
-                body {{
-                    font-family: Arial, sans-serif;
-                    line-height: 1.6;
-                    padding: 20px;
-                    max-width: 210mm;
-                    margin: 0 auto;
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
+            <script>
+                function downloadPDF() {{
+                    const element = document.getElementById('pdf-content');
+                    html2pdf()
+                        .from(element)
+                        .set({{
+                            margin: 1,
+                            filename: 'business_flow_chart.pdf',
+                            html2canvas: {{ scale: 2 }}),
+                            jsPDF: {{ format: 'a4', orientation: 'portrait' }}
+                        }}).save();
                 }}
-                h3 {{
-                    margin-top: 20px;
-                    text-align: center;
-                }}
-                h5 {{
-                    margin-bottom: 20px;
-                }}
-                .pdf-content {{
-                    padding: 50px;
-                }}
-                .arrow-chart, .flow-chart {{
-                    margin-bottom: 50px;
-                }}
-                .flow-chart-step {{
-                    padding: 0px 0px 0px 50px;
-                }}
-                .flow-chart-step div {{
-                    max-width: 90%;
-                    padding: 10px 10px 10px 30px;
-                    background-color: #f0f0f0;
-                    border-radius: 10px;
-                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-                    text-align: center;
-                    position: relative;
-                    page-break-inside: avoid;
-                }}
-                .flow-chart-step h4 {{
-                    margin: 5px 0;
-                    color: #333;
-                }}
-                .flow-chart-step div div {{
-                    margin-top: 5px;
-                    font-size: 0.9em;
-                    color: #555;
-                    text-align: left;
-                }}
-            </style>
+            </script>
         </head>
-        <body>
-            <div class="pdf-content">
-                <h3>{self.name}</h3>
+        <body style="font-family: Arial, sans-serif; line-height: 1.6; padding: 20px; max-width: 210mm; margin: 0 auto;">
+            <div id="pdf-content" style="padding: 50px;">
+                <h3 style="margin-top: 20px; text-align: center;">{self.name}</h3>
                 <h5>Date: {date.today().strftime("%d/%m/%Y")}</h5>
                 <h4>Subject: Business Flow Chart</h4>
                 <div style="font-size: 0.9em;">
@@ -225,7 +183,7 @@ class RenderHTML:
                 {arrow_chart_with_page_break}
                 
                 <!-- Flow Chart -->
-                <div class="flow-chart">
+                <div id="flow-chart">
                     <h3>Procurement Process:</h3>
                     <div style="display: flex; flex-direction: column; align-items: center; gap: 20px;">
                         {flow_chart_html}
@@ -235,6 +193,7 @@ class RenderHTML:
                 <p style="margin-top: 100px">I hereby declare that the information is complete and best to my knowledge.</p>
                 <p>Authorized Signatory (Sign & Stamp)</p>
             </div>
+            <button onclick="downloadPDF()">Download PDF</button>
         </body>
         </html>
         """
@@ -298,28 +257,4 @@ if 'flow_chart_steps' in st.session_state:
             business_activity=business_activity_input  # Pass the business activity input
         )
         html_output = html_generator.generate_html()
-
-        # Generate PDF using xhtml2pdf
-        pdf_file = BytesIO()
-        try:
-            pisa_status = pisa.CreatePDF(html_output, dest=pdf_file)
-            if pisa_status.err:
-                st.error("Error generating PDF")
-                pdf_bytes = None
-            else:
-                pdf_bytes = pdf_file.getvalue()
-        except Exception as e:
-            st.error(f"Error generating PDF: {str(e)}")
-            pdf_bytes = None
-
-        # Provide the download button if PDF was generated
-        if pdf_bytes:
-            st.download_button(
-                label="Download Flow Chart as PDF",
-                data=pdf_bytes,
-                file_name="flow_chart.pdf",
-                mime="application/pdf"
-            )
-
-        # Optionally, display the HTML in the Streamlit app
         components.html(html_output, height=800, scrolling=True)
