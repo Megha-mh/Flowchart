@@ -67,8 +67,9 @@ def rephrase_business_activity(activity: str) -> str:
     return activity  # Return as-is if no rephrasing is found.
 
 class RenderHTML:
-    def __init__(self, name, flow_chart_steps, arrow_chart, business_activity):
+    def __init__(self, name, description, flow_chart_steps, arrow_chart, business_activity):
         self.name = name
+        self.description = description  # New field for company description
         self.flow_chart_steps = flow_chart_steps if flow_chart_steps else []  # Ensure flow_chart_steps is a list
         self.arrow_chart = arrow_chart
         self.business_activity = business_activity  # The input business activity is directly passed
@@ -179,8 +180,10 @@ class RenderHTML:
                 <h3 style="margin-top: 20px; text-align: center;">{self.name}</h3>
                 <h5>Date: {date.today().strftime("%d/%m/%Y")}</h5>
                 <h4>Subject: Business Flow Chart</h4>
+                
+                <!-- Introduction Section with Company Description -->
                 <div style="font-size: 0.9em;">
-                    <p>The business activity is as follows: {rephrase_business_activity(self.business_activity)}</p>
+                    <p>{self.description}</p>
                 </div>
 
                 <!-- Arrow Chart with Page Break -->
@@ -210,6 +213,7 @@ st.title("Business Flow Chart Renderer")
 
 # Input fields
 name_input = st.text_input("Enter the name of the company:", "")
+business_description_input = st.text_area("Enter the Company Description:")  # New input for company description
 business_activity_input = st.text_area("Enter the Business Activity:")  # New input for business activity
 input_arrowchart_content2 = st.text_input('Billing system (how payment is collected from customers)', key="input_arrowchart_content2")
 input_arrowchart_content3 = st.text_input('Enter the Place of Supply', key="input_arrowchart_content3")  # Updated Place of Supply
@@ -256,6 +260,7 @@ if 'flow_chart_steps' in st.session_state:
     if st.button("Render Flow Chart"):
         html_generator = RenderHTML(
             name=name_input,
+            description=business_description_input,  # Pass company description input
             flow_chart_steps=st.session_state['flow_chart_steps'],
             arrow_chart=arrow_chart,
             business_activity=business_activity_input  # Pass the business activity input
