@@ -60,18 +60,27 @@ def generate_flow_chart_steps(explanation: str) -> List[FlowChartStep]:
         st.error(f"Error generating flow chart steps: {str(e)}")
         return []
 
+def rephrase_business_activity(activity: str) -> str:
+    """Rephrase the business activity to make it clearer and more formal."""
+    # Mapping common phrases to more formal explanations
+    if "website" in activity.lower() and "digital" in activity.lower():
+        return "The business specializes in providing website development and digital services, offering tailored solutions to meet client needs."
+    # You can add more conditional rephrasing based on different inputs.
+    return activity  # Return as-is if no rephrasing is found.
+
 class RenderHTML:
-    def __init__(self, name, flow_chart_steps, arrow_chart, introduction):
+    def __init__(self, name, flow_chart_steps, arrow_chart, business_activity):
         self.name = name
         self.flow_chart_steps = flow_chart_steps if flow_chart_steps else []  # Ensure flow_chart_steps is a list
         self.arrow_chart = arrow_chart
-        self.introduction = introduction
+        self.business_activity = business_activity  # The input business activity is directly passed
 
     def improve_arrow_chart_content(self):
         """Modify and improve the arrow chart content, making it more professional and capitalized."""
         return {
+            # Rephrase the input for Business Activity to ensure clarity and formality
             "title1": self.arrow_chart.get('title1', 'Business Activity').title().strip(),
-            "content1": "The business focuses on delivering high-quality services to its clients by leveraging industry best practices and ensuring customer satisfaction across various domains.".title().strip(),
+            "content1": rephrase_business_activity(self.business_activity),  # Use rephrase function here
             
             "title2": self.arrow_chart.get('title2', 'Billing System').title().strip(),
             "content2": "The company utilizes an efficient billing system where payments are collected through secure gateways. Clients are invoiced electronically with various payment options available.".title().strip(),
@@ -177,7 +186,7 @@ class RenderHTML:
                 <h5>Date: {date.today().strftime("%d/%m/%Y")}</h5>
                 <h4>Subject: Business Flow Chart</h4>
                 <div style="font-size: 0.9em;">
-                    <p>{self.introduction}</p>
+                    <p>The business activity is as follows: {rephrase_business_activity(self.business_activity)}</p>
                 </div>
                 
                 <!-- Arrow Chart with Page Break -->
@@ -205,8 +214,7 @@ st.title("Business Flow Chart Renderer")
 
 # Input fields
 name_input = st.text_input("Enter the name of the company:", "")
-company_intro_input = st.text_area("Enter the introduction for the company:")
-input_arrowchart_content1 = st.text_input('Enter the content For BUSINESS ACTIVITY', key="input_arrowchart_content1")
+business_activity_input = st.text_area("Enter the Business Activity:")  # New input for business activity
 input_arrowchart_content2 = st.text_input('Billing system (how payment is collected from customers)', key="input_arrowchart_content2")
 input_arrowchart_content3 = st.text_input('Enter the Place of Supply', key="input_arrowchart_content3")  # Updated Place of Supply
 input_arrowchart_content4 = st.text_input('Enter the content For EXPENSES AND COST OF SALES', key="input_arrowchart_content4")  # Updated for expenses
@@ -216,7 +224,7 @@ arrow_chart = {
     "title2": "Billing System",
     "title3": "PLACE OF SUPPLY",
     "title4": "EXPENSES AND COST OF SALES",
-    "content1": input_arrowchart_content1,
+    "content1": business_activity_input,  # Directly using the user input for business activity
     "content2": input_arrowchart_content2,
     "content3": input_arrowchart_content3,  # Dynamically pass the Place of Supply content
     "content4": input_arrowchart_content4   # Dynamically pass the Expenses and Cost of Sales content
@@ -256,7 +264,7 @@ if 'flow_chart_steps' in st.session_state:
             name=name_input,
             flow_chart_steps=st.session_state['flow_chart_steps'],
             arrow_chart=arrow_chart,
-            introduction=company_intro_input
+            business_activity=business_activity_input  # Pass the business activity input
         )
         html_output = html_generator.generate_html()
         components.html(html_output, height=800, scrolling=True)
