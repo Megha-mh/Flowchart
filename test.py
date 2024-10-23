@@ -70,8 +70,9 @@ class RenderHTML:
     def improve_arrow_chart_content(self):
         """Modify and improve the arrow chart content, making it more professional and capitalized."""
         return {
+            # General Business Activity explanation
             "title1": self.arrow_chart.get('title1', 'Business Activity').title().strip(),
-            "content1": "The business focuses on delivering high-quality services to its clients by leveraging industry best practices and ensuring customer satisfaction across various domains.".title().strip(),
+            "content1": "The business offers professional services, focusing on delivering quality solutions to meet client needs in a competitive market.".title().strip(),
             
             "title2": self.arrow_chart.get('title2', 'Billing System').title().strip(),
             "content2": "The company utilizes an efficient billing system where payments are collected through secure gateways. Clients are invoiced electronically with various payment options available.".title().strip(),
@@ -205,7 +206,7 @@ st.title("Business Flow Chart Renderer")
 
 # Input fields
 name_input = st.text_input("Enter the name of the company:", "")
-company_intro_input = st.text_area("Enter the introduction for the company:")
+company_intro_input = st.text_area("Enter the introduction for the company:")  # Used to dynamically update Business Activity
 input_arrowchart_content1 = st.text_input('Enter the content For BUSINESS ACTIVITY', key="input_arrowchart_content1")
 input_arrowchart_content2 = st.text_input('Billing system (how payment is collected from customers)', key="input_arrowchart_content2")
 input_arrowchart_content3 = st.text_input('Enter the Place of Supply', key="input_arrowchart_content3")  # Updated Place of Supply
@@ -256,7 +257,7 @@ if 'flow_chart_steps' in st.session_state:
             name=name_input,
             flow_chart_steps=st.session_state['flow_chart_steps'],
             arrow_chart=arrow_chart,
-            introduction=company_intro_input
+            introduction=company_intro_input  # Pass the dynamic introduction
         )
         html_output = html_generator.generate_html()
         components.html(html_output, height=800, scrolling=True)
