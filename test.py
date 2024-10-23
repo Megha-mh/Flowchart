@@ -60,6 +60,14 @@ def generate_flow_chart_steps(explanation: str) -> List[FlowChartStep]:
         st.error(f"Error generating flow chart steps: {str(e)}")
         return []
 
+def rephrase_business_activity(activity: str) -> str:
+    """Rephrase the business activity to make it clearer and more formal."""
+    # Mapping common phrases to more formal explanations
+    if "website" in activity.lower() and "digital" in activity.lower():
+        return "The business specializes in providing website development and digital services, offering tailored solutions to meet client needs."
+    # You can add more conditional rephrasing based on different inputs.
+    return activity  # Return as-is if no rephrasing is found.
+
 class RenderHTML:
     def __init__(self, name, flow_chart_steps, arrow_chart, business_activity):
         self.name = name
@@ -70,9 +78,9 @@ class RenderHTML:
     def improve_arrow_chart_content(self):
         """Modify and improve the arrow chart content, making it more professional and capitalized."""
         return {
-            # Print the input for Business Activity, ensuring clarity
+            # Rephrase the input for Business Activity to ensure clarity and formality
             "title1": self.arrow_chart.get('title1', 'Business Activity').title().strip(),
-            "content1": f"The business specializes in {self.business_activity}. This ensures that clients receive clear and tailored solutions.".title().strip(),
+            "content1": rephrase_business_activity(self.business_activity),  # Use rephrase function here
             
             "title2": self.arrow_chart.get('title2', 'Billing System').title().strip(),
             "content2": "The company utilizes an efficient billing system where payments are collected through secure gateways. Clients are invoiced electronically with various payment options available.".title().strip(),
@@ -178,7 +186,7 @@ class RenderHTML:
                 <h5>Date: {date.today().strftime("%d/%m/%Y")}</h5>
                 <h4>Subject: Business Flow Chart</h4>
                 <div style="font-size: 0.9em;">
-                    <p>The business activity is as follows: {self.business_activity}</p>
+                    <p>The business activity is as follows: {rephrase_business_activity(self.business_activity)}</p>
                 </div>
                 
                 <!-- Arrow Chart with Page Break -->
