@@ -125,18 +125,46 @@ class RenderHTML:
             <div style="display: flex; flex-direction: column; align-items: center;">
         """
 
-        for index, step in enumerate(self.flow_chart_steps):
-            flow_chart_html += f"""
-            <div style="display: flex; align-items: center; margin-bottom: 20px;">
-                <div style="border: 2px solid #0C6C98; padding: 20px; border-radius: 10px; width: 150px; text-align: center;">
-                    {step['title']}
-                </div>
-                <div style="flex-grow: 1; border-top: 2px solid #0C6C98; margin: 0 10px;"></div>
-                <div style="border: 2px solid #0C6C98; padding: 20px; border-radius: 10px; width: 250px; text-align: left;">
-                    {step['description'].replace(',', '<br>')}
-                </div>
+        # New flowchart content: Highlight interactions between departments
+        flow_chart_html += """
+        <div style="display: flex; align-items: center; margin-bottom: 20px;">
+            <div style="border: 2px solid #0C6C98; padding: 20px; border-radius: 10px; width: 150px; text-align: center;">
+                Sales Department
             </div>
-            """
+            <div style="flex-grow: 1; border-top: 2px solid #0C6C98; margin: 0 10px;"></div>
+            <div style="border: 2px solid #0C6C98; padding: 20px; border-radius: 10px; width: 250px; text-align: left;">
+                Leads are generated and sent to Marketing for campaign development.
+            </div>
+        </div>
+        <div style="display: flex; align-items: center; margin-bottom: 20px;">
+            <div style="border: 2px solid #0C6C98; padding: 20px; border-radius: 10px; width: 150px; text-align: center;">
+                Marketing Department
+            </div>
+            <div style="flex-grow: 1; border-top: 2px solid #0C6C98; margin: 0 10px;"></div>
+            <div style="border: 2px solid #0C6C98; padding: 20px; border-radius: 10px; width: 250px; text-align: left;">
+                Develops marketing campaigns and forwards them to Finance for budgeting.
+            </div>
+        </div>
+        <div style="display: flex; align-items: center; margin-bottom: 20px;">
+            <div style="border: 2px solid #0C6C98; padding: 20px; border-radius: 10px; width: 150px; text-align: center;">
+                Finance Department
+            </div>
+            <div style="flex-grow: 1; border-top: 2px solid #0C6C98; margin: 0 10px;"></div>
+            <div style="border: 2px solid #0C6C98; padding: 20px; border-radius: 10px; width: 250px; text-align: left;">
+                Allocates budget and sends approval to Operations for execution.
+            </div>
+        </div>
+        <div style="display: flex; align-items: center; margin-bottom: 20px;">
+            <div style="border: 2px solid #0C6C98; padding: 20px; border-radius: 10px; width: 150px; text-align: center;">
+                Operations Department
+            </div>
+            <div style="flex-grow: 1; border-top: 2px solid #0C6C98; margin: 0 10px;"></div>
+            <div style="border: 2px solid #0C6C98; padding: 20px; border-radius: 10px; width: 250px; text-align: left;">
+                Executes the plan, delivering the product/service to the customer.
+            </div>
+        </div>
+        """
+
         flow_chart_html += "</div></div>"
         return flow_chart_html
 
