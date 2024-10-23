@@ -62,10 +62,6 @@ def generate_flow_chart_steps(explanation: str) -> List[FlowChartStep]:
 
 def rephrase_business_activity(activity: str) -> str:
     """Rephrase the business activity to make it clearer and more formal."""
-    # Mapping common phrases to more formal explanations
-    if "website" in activity.lower() and "digital" in activity.lower():
-        return "The business specializes in providing website development and digital services, offering tailored solutions to meet client needs."
-    # You can add more conditional rephrasing based on different inputs.
     return activity  # Return as-is if no rephrasing is found.
 
 class RenderHTML:
@@ -75,36 +71,14 @@ class RenderHTML:
         self.arrow_chart = arrow_chart
         self.business_activity = business_activity  # The input business activity is directly passed
 
-    def improve_arrow_chart_content(self):
-        """Modify and improve the arrow chart content, making it more professional and capitalized."""
-        return {
-            # Rephrase the input for Business Activity to ensure clarity and formality
-            "title1": self.arrow_chart.get('title1', 'Business Activity').title().strip(),
-            "content1": rephrase_business_activity(self.business_activity),  # Use rephrase function here
-            
-            "title2": self.arrow_chart.get('title2', 'Billing System').title().strip(),
-            "content2": "The company utilizes an efficient billing system where payments are collected through secure gateways. Clients are invoiced electronically with various payment options available.".title().strip(),
-            
-            # Dynamic Place of Supply with elaboration
-            "title3": self.arrow_chart.get('title3', 'Place Of Supply').title().strip(),
-            "content3": f"The primary place of supply is {self.arrow_chart.get('content3')}. This location is crucial for ensuring compliance with local tax regulations.".title().strip(),
-            
-            # Dynamic Expenses and Cost of Sales with elaboration
-            "title4": self.arrow_chart.get('title4', 'Expenses And Cost Of Sales').title().strip(),
-            "content4": f"The company manages expenses such as {self.arrow_chart.get('content4')}, ensuring cost-effective practices to maximize profitability.".title().strip(),
-        }
-
     def generate_arrow_chart(self):
         """Generate the improved arrow chart HTML."""
-        improved_arrow_chart = self.improve_arrow_chart_content()
-
-        category_chart_html = ""
+        arrow_chart_html = ""
         for i in range(1, 5):
-            title = improved_arrow_chart.get(f'title{i}', '').strip()
-            content = improved_arrow_chart.get(f'content{i}', '').strip()
-            
-            if title or content:  # Only render if there's valid content
-                category_chart_html += f"""
+            title = self.arrow_chart.get(f'title{i}', '').strip()
+            content = self.arrow_chart.get(f'content{i}', '').strip()
+            if title or content:
+                arrow_chart_html += f"""
                     <div style="display: flex; margin-bottom:20px; align-items: center;">
                         <div style="background-color: #0C6C98; width: 190px; height: 80px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; padding-left: 5px; font-weight: bold;">
                             {title}
@@ -115,7 +89,7 @@ class RenderHTML:
                         <div style="width: 0; height: 0; border-top: 80px solid transparent; border-bottom: 80px solid transparent; border-left: 70px solid #D3D3D3;"></div>
                     </div>
                 """
-        return category_chart_html
+        return arrow_chart_html
 
     def generate_flow_chart(self):
         """Generate the flow chart HTML content."""
@@ -123,27 +97,17 @@ class RenderHTML:
             return "<p>No flow chart steps available.</p>"
 
         flow_chart_html = ""
-        try:
-            for index, step in enumerate(self.flow_chart_steps):
-                if index != 0:
-                    flow_chart_html += """<div style="position: relative; text-align: center; font-size: 24px;">
-                                            <div style="width: 0; height: 0; border-left: 10px solid transparent; border-right: 10px solid transparent; border-top: 10px solid #333; margin: 10px auto;"></div>
-                                        </div>"""
-                
-                flow_chart_html += f"""
-                    <div style="padding: 0px 0px 0px 50px;">
-                        <div style="max-width: 90%; padding: 10px 10px 10px 30px; background-color: #f0f0f0; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); text-align: center; position: relative; page-break-inside: avoid;">
-                            <h4 style="margin: 5px 0; color: #333;">{step['title']}</h4>
-                            <div style="margin-top: 5px; font-size: 0.9em; color: #555; text-align: left;">
-                                {step['description'].replace('*', '') if isinstance(step['description'], str) else str(step['description']).replace('*', '').replace('[', '').replace(']', '')}
-                            </div>
+        for index, step in enumerate(self.flow_chart_steps):
+            flow_chart_html += f"""
+                <div style="padding: 0px 0px 0px 50px;">
+                    <div style="max-width: 90%; padding: 10px 10px 10px 30px; background-color: #f0f0f0; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); text-align: center; position: relative; page-break-inside: avoid;">
+                        <h4 style="margin: 5px 0; color: #333;">{step['title']}</h4>
+                        <div style="margin-top: 5px; font-size: 0.9em; color: #555; text-align: left;">
+                            {step['description']}
                         </div>
                     </div>
-                """
-        except Exception as e:
-            st.error(f"Error generating flow chart: {str(e)}")
-            return "<p>Error generating flow chart content.</p>"
-
+                </div>
+            """
         return flow_chart_html
 
     def generate_html(self):
@@ -169,14 +133,12 @@ class RenderHTML:
             <script>
                 function downloadPDF() {{
                     const element = document.getElementById('pdf-content');
-                    html2pdf()
-                        .from(element)
-                        .set({{
-                            margin: 1,
-                            filename: 'business_flow_chart.pdf',
-                            html2canvas: {{ scale: 2 }}),
-                            jsPDF: {{ format: 'a4', orientation: 'portrait' }}
-                        }}).save();
+                    html2pdf().from(element).set({{
+                        margin: 1,
+                        filename: 'business_flow_chart.pdf',
+                        html2canvas: {{ scale: 2 }},
+                        jsPDF: {{ format: 'a4', orientation: 'portrait' }}
+                    }}).save();
                 }}
             </script>
         </head>
@@ -199,9 +161,6 @@ class RenderHTML:
                         {flow_chart_html}
                     </div>
                 </div>
-                
-                <p style="margin-top: 100px">I hereby declare that the information is complete and best to my knowledge.</p>
-                <p>Authorized Signatory (Sign & Stamp)</p>
             </div>
             <button onclick="downloadPDF()">Download PDF</button>
         </body>
