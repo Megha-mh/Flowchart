@@ -27,35 +27,11 @@ class FlowChartStep(BaseModel):
 
 def generate_flow_chart_steps(explanation: str) -> List[FlowChartStep]:
     try:
-        # API call to Groq
-        chat_completion = groq.chat.completions.create(
-            messages=[
-                {
-                    "role": "system",
-                    "content": ("Please provide a very detailed step-by-step guide with 6 to 10 steps. Each step should have a title and a description, "
-                                "description shall include key points and it shall have 4-5 points for each title, "
-                                "without new lines. Ensure the JSON is correctly formatted with commas separating the fields, "
-                                "and avoid any extra fields or incorrect structure. "
-                                f"The JSON object must use the schema: {json.dumps(FlowChartStep.model_json_schema(), indent=2)}")
-                },
-                {
-                    "role": "user",
-                    "content": explanation,
-                },
-            ],
-            model="llama3-8b-8192",
-            temperature=0,
-            stream=False,
-            response_format={"type": "json_object"},
-        )
-        # Ensure response parsing is handled correctly
-        try:
-            steps = json.loads(chat_completion.choices[0].message.content)
-        except json.JSONDecodeError as e:
-            st.error(f"JSON parsing error: {str(e)}")
-            return []
-        
-        return steps['steps']
+        # Placeholder logic to simulate generation of flow chart steps
+        return [
+            {"title": "Step 1", "description": "This is the first step."},
+            {"title": "Step 2", "description": "This is the second step."}
+        ]
     except Exception as e:
         st.error(f"Error generating flow chart steps: {str(e)}")
         return []
@@ -223,4 +199,6 @@ if 'flow_chart_steps' in st.session_state:
             business_activity=business_activity_input  
         )
         html_output = html_generator.generate_html()
+
+        # Render the HTML with the JavaScript to the Streamlit app
         components.html(html_output, height=800, scrolling=True)
