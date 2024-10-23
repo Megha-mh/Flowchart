@@ -62,10 +62,8 @@ def generate_flow_chart_steps(explanation: str) -> List[FlowChartStep]:
 
 def rephrase_business_activity(activity: str) -> str:
     """Rephrase the business activity to make it clearer and more formal."""
-    # Mapping common phrases to more formal explanations
     if "website" in activity.lower() and "digital" in activity.lower():
         return "The business specializes in providing website development and digital services, offering tailored solutions to meet client needs."
-    # You can add more conditional rephrasing based on different inputs.
     return activity  # Return as-is if no rephrasing is found.
 
 class RenderHTML:
@@ -78,18 +76,15 @@ class RenderHTML:
     def improve_arrow_chart_content(self):
         """Modify and improve the arrow chart content, making it more professional and capitalized."""
         return {
-            # Rephrase the input for Business Activity to ensure clarity and formality
             "title1": self.arrow_chart.get('title1', 'Business Activity').title().strip(),
             "content1": rephrase_business_activity(self.business_activity),  # Use rephrase function here
             
             "title2": self.arrow_chart.get('title2', 'Billing System').title().strip(),
             "content2": "The company utilizes an efficient billing system where payments are collected through secure gateways. Clients are invoiced electronically with various payment options available.".title().strip(),
             
-            # Dynamic Place of Supply with elaboration
             "title3": self.arrow_chart.get('title3', 'Place Of Supply').title().strip(),
             "content3": f"The primary place of supply is {self.arrow_chart.get('content3')}. This location is crucial for ensuring compliance with local tax regulations.".title().strip(),
             
-            # Dynamic Expenses and Cost of Sales with elaboration
             "title4": self.arrow_chart.get('title4', 'Expenses And Cost Of Sales').title().strip(),
             "content4": f"The company manages expenses such as {self.arrow_chart.get('content4')}, ensuring cost-effective practices to maximize profitability.".title().strip(),
         }
@@ -151,7 +146,6 @@ class RenderHTML:
         flow_chart_html = self.generate_flow_chart()
         arrow_chart_html = self.generate_arrow_chart()
 
-        # Add page break after arrow chart if arrow_chart_html exists
         arrow_chart_with_page_break = f"""
         <div style="page-break-after: always;">
             {arrow_chart_html}
@@ -174,7 +168,7 @@ class RenderHTML:
                         .set({{
                             margin: 1,
                             filename: 'business_flow_chart.pdf',
-                            html2canvas: {{ scale: 2 }}),
+                            html2canvas: {{ scale: 2 }},
                             jsPDF: {{ format: 'a4', orientation: 'portrait' }}
                         }}).save();
                 }}
@@ -188,10 +182,10 @@ class RenderHTML:
                 <div style="font-size: 0.9em;">
                     <p>The business activity is as follows: {rephrase_business_activity(self.business_activity)}</p>
                 </div>
-                
+
                 <!-- Arrow Chart with Page Break -->
                 {arrow_chart_with_page_break}
-                
+
                 <!-- Flow Chart -->
                 <div id="flow-chart">
                     <h3>Procurement Process:</h3>
@@ -199,10 +193,12 @@ class RenderHTML:
                         {flow_chart_html}
                     </div>
                 </div>
-                
+
                 <p style="margin-top: 100px">I hereby declare that the information is complete and best to my knowledge.</p>
                 <p>Authorized Signatory (Sign & Stamp)</p>
             </div>
+
+            <!-- Download button -->
             <button onclick="downloadPDF()">Download PDF</button>
         </body>
         </html>
@@ -248,11 +244,9 @@ if 'flow_chart_steps' in st.session_state:
         description_input = st.text_area(f"Step {i+1} Description", value=step['description'], key=f"description_{i}")
         edited_steps.append({"title": title_input, "description": description_input})
         
-        # Add "Add Step" button after each step
         if st.button(f"Add Step after Step {i+1}"):
             edited_steps.insert(i+1, {"title": "", "description": ""})
 
-        # Add "Delete Step" button to remove a step
         if st.button(f"Delete Step {i+1}"):
             edited_steps.pop(i)
 
