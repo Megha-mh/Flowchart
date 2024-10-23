@@ -37,10 +37,8 @@ def generate_flow_chart_steps(explanation: str) -> List[FlowChartStep]:
             response_format={"type": "json_object"},
         )
         steps = json.loads(chat_completion.choices[0].message.content)
-        print(f"Steps received: {steps}")  # Add a debug statement
         return steps['steps']
     except Exception as e:
-        print(f"Error in API call: {e}")  # Add a debug statement
         st.error('No input given')
         return []
 
@@ -190,7 +188,7 @@ st.title("Business Flow Chart Renderer")
 name_input = st.text_input("Enter the name of the company:", "")
 company_intro_input = st.text_area("Enter the introduction for the company:")  # New introduction input field
 input_arrowchart_content1 = st.text_input('Enter the content For BUSINESS ACTIVITY', key="input_arrowchart_content1")
-input_arrowchart_content2 = st.text_input('Billing system (how payment is collected from customers)', key="input_arrowchart_content2")
+input_arrowchart_content2 = st.text_input('Billing system (how payment is collected from customers)', key="input_arrowchart_content2")
 input_arrowchart_content3 = st.text_input('Enter the content For PLACE OF SUPPLY', key="input_arrowchart_content3")
 input_arrowchart_content4 = st.text_input('Enter the content For EXPENSES AND COST OF SALES', key="input_arrowchart_content4")
 
