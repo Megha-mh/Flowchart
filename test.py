@@ -125,15 +125,15 @@ class RenderHTML:
             <div style="display: flex; flex-direction: column; align-items: center;">
         """
 
-        # New flowchart content: Reflecting the business process
+        # Elaborated flowchart content: Reflecting the business process
         flow_chart_html += """
         <div style="display: flex; align-items: center; margin-bottom: 20px;">
             <div style="border: 2px solid #0C6C98; padding: 20px; border-radius: 10px; width: 150px; text-align: center;">
                 How the Business Works
             </div>
             <div style="flex-grow: 1; border-top: 2px solid #0C6C98; margin: 0 10px;"></div>
-            <div style="border: 2px solid #0C6C98; padding: 20px; border-radius: 10px; width: 250px; text-align: left;">
-                The company defines its operational model and core offerings.
+            <div style="border: 2px solid #0C6C98; padding: 20px; border-radius: 10px; width: 300px; text-align: left;">
+                The business defines its operational framework, core offerings, and target markets. Resources and partnerships are aligned to ensure smooth operations with clear departmental roles.
             </div>
         </div>
         <div style="display: flex; align-items: center; margin-bottom: 20px;">
@@ -141,8 +141,8 @@ class RenderHTML:
                 Providing Services
             </div>
             <div style="flex-grow: 1; border-top: 2px solid #0C6C98; margin: 0 10px;"></div>
-            <div style="border: 2px solid #0C6C98; padding: 20px; border-radius: 10px; width: 250px; text-align: left;">
-                Services are delivered to customers based on business agreements.
+            <div style="border: 2px solid #0C6C98; padding: 20px; border-radius: 10px; width: 300px; text-align: left;">
+                Services are delivered according to client needs, maintaining quality standards and timelines. Departments collaborate to ensure a smooth delivery process.
             </div>
         </div>
         <div style="display: flex; align-items: center; margin-bottom: 20px;">
@@ -150,8 +150,8 @@ class RenderHTML:
                 Transfer of Product and Supplies
             </div>
             <div style="flex-grow: 1; border-top: 2px solid #0C6C98; margin: 0 10px;"></div>
-            <div style="border: 2px solid #0C6C98; padding: 20px; border-radius: 10px; width: 250px; text-align: left;">
-                Products and supplies are transferred to the customers or to delivery agents.
+            <div style="border: 2px solid #0C6C98; padding: 20px; border-radius: 10px; width: 300px; text-align: left;">
+                Products are transferred efficiently, ensuring timely delivery and product quality. Collaboration with logistics, suppliers, and warehouses is essential.
             </div>
         </div>
         <div style="display: flex; align-items: center; margin-bottom: 20px;">
@@ -159,8 +159,8 @@ class RenderHTML:
                 Receiving the Payment
             </div>
             <div style="flex-grow: 1; border-top: 2px solid #0C6C98; margin: 0 10px;"></div>
-            <div style="border: 2px solid #0C6C98; padding: 20px; border-radius: 10px; width: 250px; text-align: left;">
-                Payment is processed through the billing system and finalized.
+            <div style="border: 2px solid #0C6C98; padding: 20px; border-radius: 10px; width: 300px; text-align: left;">
+                Payment is collected using efficient billing systems with multiple payment options. Payments are tracked and reconciled, ensuring accurate financial records.
             </div>
         </div>
         """
