@@ -203,6 +203,7 @@ class RenderHTML:
                 <p style="margin-top: 100px">I hereby declare that the information is complete and best to my knowledge.</p>
                 <p>Authorized Signatory (Sign & Stamp)</p>
             </div>
+            <!-- Here is the fixed Download PDF button -->
             <button onclick="downloadPDF()">Download PDF</button>
         </body>
         </html>
@@ -268,13 +269,5 @@ if 'flow_chart_steps' in st.session_state:
         )
         html_output = html_generator.generate_html()
 
-        # Render HTML in Streamlit and provide a download button
+        # Render HTML in Streamlit
         components.html(html_output, height=800, scrolling=True)
-
-        # Display download button outside of the HTML preview
-        st.download_button(
-            label="Download PDF",
-            data=html_output.encode('utf-8'),
-            file_name="business_flow_chart.html",
-            mime="text/html"
-        )
