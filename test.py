@@ -81,7 +81,7 @@ class RenderHTML:
             "content1": rephrase_business_activity(self.business_activity),  # Use rephrase function here
             
             "title2": self.arrow_chart.get('title2', 'Billing System').title().strip(),
-            "content2": "The company utilizes an efficient billing system where payments are collected through secure gateways. Clients are invoiced electronically with various payment options available.".title().strip(),
+            "content2": self.arrow_chart.get('content2', '').title().strip(),  # Use dynamic billing system content from input
             
             "title3": self.arrow_chart.get('title3', 'Place Of Supply').title().strip(),
             "content3": f"The primary place of supply is {self.arrow_chart.get('content3')}. This location is crucial for ensuring compliance with local tax regulations.".title().strip(),
@@ -225,7 +225,7 @@ arrow_chart = {
     "title3": "PLACE OF SUPPLY",
     "title4": "EXPENSES AND COST OF SALES",
     "content1": business_activity_input,  # Directly using the user input for business activity
-    "content2": input_arrowchart_content2,
+    "content2": input_arrowchart_content2,  # Dynamically use input for billing system
     "content3": input_arrowchart_content3,  # Dynamically pass the Place of Supply content
     "content4": input_arrowchart_content4   # Dynamically pass the Expenses and Cost of Sales content
 }
