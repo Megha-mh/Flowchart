@@ -8,7 +8,7 @@ from typing import List
 import os
 
 # Fetching the API key from the environment variable
-groq_api_key = os.getenv("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")
+groq_api_key = os.getenv("GROQ_API_KEY")
 
 # Check if API key is available
 if not groq_api_key:
