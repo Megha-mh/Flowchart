@@ -3,15 +3,11 @@ from datetime import date
 from pydantic import BaseModel
 import streamlit as st
 import streamlit.components.v1 as components
+from groq import Groq
 from typing import List
 import os
-import tempfile
-import base64
-import pdfkit
-
-# Ensure session state is initialized
-if 'flow_chart_steps' not in st.session_state:
-    st.session_state['flow_chart_steps'] = []
+from xhtml2pdf import pisa
+from io import BytesIO
 
 # Fetching the API key from the environment variable
 groq_api_key = os.getenv("GROQ_API_KEY")
@@ -19,10 +15,13 @@ groq_api_key = os.getenv("GROQ_API_KEY")
 # Check if API key is available
 if not groq_api_key:
     st.error("Groq API key not found in environment variable!")
-else:
-    from groq import Groq
-    # Initializing the Groq object with the API key
-    groq = Groq(api_key=groq_api_key)
+
+# Initializing the Groq object with the API key
+groq = Groq(api_key=groq_api_key)
+
+# Ensure session state is initialized
+if 'flow_chart_steps' not in st.session_state:
+    st.session_state['flow_chart_steps'] = []
 
 class FlowChartStep(BaseModel):
     title: str
@@ -35,12 +34,11 @@ def generate_flow_chart_steps(explanation: str) -> List[FlowChartStep]:
             messages=[
                 {
                     "role": "system",
-                    "content": (
-                        "Please provide a very detailed step-by-step guide with 6 to 10 steps. Each step should have a title and a description. "
-                        "The description should include key points and have 4-5 points for each title, "
-                        "without new lines. Ensure the JSON is correctly formatted with commas separating the fields, "
-                        "and avoid any extra fields or incorrect structure. "
-                        f"The JSON object must use the schema: {json.dumps(FlowChartStep.model_json_schema(), indent=2)}")
+                    "content": ("Please provide a very detailed step-by-step guide with 6 to 10 steps. Each step should have a title and a description, "
+                                "description shall include key points and it shall have 4-5 points for each title, "
+                                "without new lines. Ensure the JSON is correctly formatted with commas separating the fields, "
+                                "and avoid any extra fields or incorrect structure. "
+                                f"The JSON object must use the schema: {json.dumps(FlowChartStep.model_json_schema(), indent=2)}")
                 },
                 {
                     "role": "user",
@@ -87,15 +85,15 @@ class RenderHTML:
             "content1": rephrase_business_activity(self.business_activity),  # Use rephrase function here
             
             "title2": self.arrow_chart.get('title2', 'Billing System').title().strip(),
-            "content2": self.arrow_chart.get('content2', '').strip(),
+            "content2": "The company utilizes an efficient billing system where payments are collected through secure gateways. Clients are invoiced electronically with various payment options available.".strip(),
             
             # Dynamic Place of Supply with elaboration
             "title3": self.arrow_chart.get('title3', 'Place Of Supply').title().strip(),
-            "content3": self.arrow_chart.get('content3', '').strip(),
+            "content3": f"The primary place of supply is {self.arrow_chart.get('content3')}. This location is crucial for ensuring compliance with local tax regulations.".strip(),
             
             # Dynamic Expenses and Cost of Sales with elaboration
             "title4": self.arrow_chart.get('title4', 'Expenses And Cost Of Sales').title().strip(),
-            "content4": self.arrow_chart.get('content4', '').strip(),
+            "content4": f"The company manages expenses such as {self.arrow_chart.get('content4')}, ensuring cost-effective practices to maximize profitability.".strip(),
         }
 
     def generate_arrow_chart(self):
@@ -110,10 +108,10 @@ class RenderHTML:
             if title or content:  # Only render if there's valid content
                 category_chart_html += f"""
                     <div style="display: flex; margin-bottom:20px; align-items: center;">
-                        <div style="background-color: #0C6C98; width: 190px; height: 80px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; padding: 10px; font-weight: bold;">
+                        <div style="background-color: #0C6C98; width: 190px; height: 80px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; padding-left: 5px; font-weight: bold;">
                             {title}
                         </div>
-                        <div style="width: 230px; min-height: 130px; background-color: #D3D3D3; margin-left: 0px; display: flex; align-items: center; justify-content: flex-start; color: black; font-size: 12px; padding: 10px; line-height: 1.5;">
+                        <div style="width: 230px; height: 130px; background-color: #D3D3D3; margin-left: 0px; display: flex; align-items: center; justify-content: flex-start; color: black; font-size: 12px; padding-left: 10px; line-height: 1.5;">
                             {content.replace(',', '<br>')}
                         </div>
                         <div style="width: 0; height: 0; border-top: 80px solid transparent; border-bottom: 80px solid transparent; border-left: 70px solid #D3D3D3;"></div>
@@ -167,16 +165,56 @@ class RenderHTML:
         <html lang="en">
         <head>
             <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>Business Flow Chart</title>
-            <!-- Include any additional CSS styles here -->
             <style>
-                /* You can add custom styles here */
+                body {{
+                    font-family: Arial, sans-serif;
+                    line-height: 1.6;
+                    padding: 20px;
+                    max-width: 210mm;
+                    margin: 0 auto;
+                }}
+                h3 {{
+                    margin-top: 20px;
+                    text-align: center;
+                }}
+                h5 {{
+                    margin-bottom: 20px;
+                }}
+                .pdf-content {{
+                    padding: 50px;
+                }}
+                .arrow-chart, .flow-chart {{
+                    margin-bottom: 50px;
+                }}
+                .flow-chart-step {{
+                    padding: 0px 0px 0px 50px;
+                }}
+                .flow-chart-step div {{
+                    max-width: 90%;
+                    padding: 10px 10px 10px 30px;
+                    background-color: #f0f0f0;
+                    border-radius: 10px;
+                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                    text-align: center;
+                    position: relative;
+                    page-break-inside: avoid;
+                }}
+                .flow-chart-step h4 {{
+                    margin: 5px 0;
+                    color: #333;
+                }}
+                .flow-chart-step div div {{
+                    margin-top: 5px;
+                    font-size: 0.9em;
+                    color: #555;
+                    text-align: left;
+                }}
             </style>
         </head>
-        <body style="font-family: Arial, sans-serif; line-height: 1.6; padding: 20px; max-width: 210mm; margin: 0 auto;">
-            <div id="pdf-content" style="padding: 50px;">
-                <h3 style="margin-top: 20px; text-align: center;">{self.name}</h3>
+        <body>
+            <div class="pdf-content">
+                <h3>{self.name}</h3>
                 <h5>Date: {date.today().strftime("%d/%m/%Y")}</h5>
                 <h4>Subject: Business Flow Chart</h4>
                 <div style="font-size: 0.9em;">
@@ -187,7 +225,7 @@ class RenderHTML:
                 {arrow_chart_with_page_break}
                 
                 <!-- Flow Chart -->
-                <div id="flow-chart">
+                <div class="flow-chart">
                     <h3>Procurement Process:</h3>
                     <div style="display: flex; flex-direction: column; align-items: center; gap: 20px;">
                         {flow_chart_html}
@@ -210,7 +248,7 @@ name_input = st.text_input("Enter the name of the company:", "")
 business_activity_input = st.text_area("Enter the Business Activity:")  # New input for business activity
 input_arrowchart_content2 = st.text_input('Billing system (how payment is collected from customers)', key="input_arrowchart_content2")
 input_arrowchart_content3 = st.text_input('Enter the Place of Supply', key="input_arrowchart_content3")  # Updated Place of Supply
-input_arrowchart_content4 = st.text_input('Enter the Expenses and Cost of Sales', key="input_arrowchart_content4")  # Updated for expenses
+input_arrowchart_content4 = st.text_input('Enter the content For EXPENSES AND COST OF SALES', key="input_arrowchart_content4")  # Updated for expenses
 
 arrow_chart = {
     "title1": "BUSINESS",
@@ -228,11 +266,8 @@ explanation = st.text_area("Step Explanation", "Step Explanation")
 
 # Button to generate flow chart steps
 if st.button("Generate Flow Chart"):
-    if not groq_api_key:
-        st.error("Cannot generate flow chart steps without Groq API key.")
-    else:
-        flow_chart_steps = generate_flow_chart_steps(explanation)
-        st.session_state['flow_chart_steps'] = flow_chart_steps  # Store in session state
+    flow_chart_steps = generate_flow_chart_steps(explanation)
+    st.session_state['flow_chart_steps'] = flow_chart_steps  # Store in session state
 
 # Check if flow chart steps are in session state
 if 'flow_chart_steps' in st.session_state:
@@ -245,18 +280,16 @@ if 'flow_chart_steps' in st.session_state:
         edited_steps.append({"title": title_input, "description": description_input})
         
         # Add "Add Step" button after each step
-        if st.button(f"Add Step after Step {i+1}", key=f"add_step_{i}"):
+        if st.button(f"Add Step after Step {i+1}"):
             edited_steps.insert(i+1, {"title": "", "description": ""})
-            st.experimental_rerun()  # Rerun the app to update the steps
 
         # Add "Delete Step" button to remove a step
-        if st.button(f"Delete Step {i+1}", key=f"delete_step_{i}"):
+        if st.button(f"Delete Step {i+1}"):
             edited_steps.pop(i)
-            st.experimental_rerun()  # Rerun the app to update the steps
 
     st.session_state['flow_chart_steps'] = edited_steps  # Update session state with edited steps
 
-    # Render the flow chart HTML and generate PDF
+    # Render the flow chart HTML
     if st.button("Render Flow Chart"):
         html_generator = RenderHTML(
             name=name_input,
@@ -265,29 +298,28 @@ if 'flow_chart_steps' in st.session_state:
             business_activity=business_activity_input  # Pass the business activity input
         )
         html_output = html_generator.generate_html()
-        
-        # Display the HTML content in the app
-        components.html(html_output, height=800, scrolling=True)
 
-        # Generate the PDF
+        # Generate PDF using xhtml2pdf
+        pdf_file = BytesIO()
         try:
-            # Write HTML content to a temporary file
-            with tempfile.NamedTemporaryFile('w', delete=False, suffix='.html') as f:
-                f.write(html_output)
-                temp_html_file = f.name
-
-            # Optionally, specify pdfkit configuration if wkhtmltopdf is not in PATH
-            # pdfkit_config = pdfkit.configuration(wkhtmltopdf='/path/to/wkhtmltopdf')
-
-            # Generate PDF from the HTML file
-            pdf = pdfkit.from_file(temp_html_file, False)  # , configuration=pdfkit_config)
-
-            # Encode PDF to base64 for download
-            b64_pdf = base64.b64encode(pdf).decode('utf-8')
-
-            # Create a download link
-            download_link = f'<a href="data:application/pdf;base64,{b64_pdf}" download="business_flow_chart.pdf">Download PDF</a>'
-            st.markdown(download_link, unsafe_allow_html=True)
-
+            pisa_status = pisa.CreatePDF(html_output, dest=pdf_file)
+            if pisa_status.err:
+                st.error("Error generating PDF")
+                pdf_bytes = None
+            else:
+                pdf_bytes = pdf_file.getvalue()
         except Exception as e:
             st.error(f"Error generating PDF: {str(e)}")
+            pdf_bytes = None
+
+        # Provide the download button if PDF was generated
+        if pdf_bytes:
+            st.download_button(
+                label="Download Flow Chart as PDF",
+                data=pdf_bytes,
+                file_name="flow_chart.pdf",
+                mime="application/pdf"
+            )
+
+        # Optionally, display the HTML in the Streamlit app
+        components.html(html_output, height=800, scrolling=True)
