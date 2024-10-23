@@ -32,10 +32,11 @@ def generate_flow_chart_steps(explanation: str) -> List[FlowChartStep]:
             messages=[
                 {
                     "role": "system",
-                    "content": "Please provide a very detailed step-by-step guide with 6 to 10 steps. Each step should have a title and a description, "
-                               "description shall include key points and it shall have 4-5 points for each title, "
-                               "without new lines. Make at least 10 sentences.\n"
-                               f"The JSON object must use the schema: {json.dumps(FlowChartStep.model_json_schema(), indent=2)}",
+                    "content": ("Please provide a very detailed step-by-step guide with 6 to 10 steps. Each step should have a title and a description, "
+                                "description shall include key points and it shall have 4-5 points for each title, "
+                                "without new lines. Ensure the JSON is correctly formatted with commas separating the fields, "
+                                "and avoid any extra fields or incorrect structure. "
+                                f"The JSON object must use the schema: {json.dumps(FlowChartStep.model_json_schema(), indent=2)}")
                 },
                 {
                     "role": "user",
