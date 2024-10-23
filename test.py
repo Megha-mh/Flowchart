@@ -70,9 +70,9 @@ class RenderHTML:
     def improve_arrow_chart_content(self):
         """Modify and improve the arrow chart content, making it more professional and capitalized."""
         return {
-            # General Business Activity explanation
+            # Extracts core details from the business introduction to clarify the business activity
             "title1": self.arrow_chart.get('title1', 'Business Activity').title().strip(),
-            "content1": "The business offers professional services, focusing on delivering quality solutions to meet client needs in a competitive market.".title().strip(),
+            "content1": f"{self.introduction}. The company specializes in providing services that focus on delivering tailored solutions to meet the unique needs of its clients.".title().strip(),
             
             "title2": self.arrow_chart.get('title2', 'Billing System').title().strip(),
             "content2": "The company utilizes an efficient billing system where payments are collected through secure gateways. Clients are invoiced electronically with various payment options available.".title().strip(),
