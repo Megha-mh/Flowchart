@@ -267,4 +267,14 @@ if 'flow_chart_steps' in st.session_state:
             business_activity=business_activity_input  # Pass the business activity input
         )
         html_output = html_generator.generate_html()
+
+        # Render HTML in Streamlit and provide a download button
         components.html(html_output, height=800, scrolling=True)
+
+        # Display download button outside of the HTML preview
+        st.download_button(
+            label="Download PDF",
+            data=html_output.encode('utf-8'),
+            file_name="business_flow_chart.html",
+            mime="text/html"
+        )
