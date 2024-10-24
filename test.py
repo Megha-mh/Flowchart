@@ -66,18 +66,21 @@ def generate_flow_chart_steps(explanation: str) -> List[FlowChartStep]:
 
         # Ensure response parsing is handled correctly
         try:
-            # This assumes the response contains a 'steps' field
-            steps = json.loads(chat_completion.choices[0].message.content)
-            st.write("Parsed Steps:", steps)  # For debugging
+            response_content = json.loads(chat_completion.choices[0].message.content)
+            st.write("Parsed Content:", response_content)  # For debugging
+            
+            # Check if title and description are available and use them to construct a step
+            if "title" in response_content and "description" in response_content:
+                steps = [{"title": response_content["title"], "description": response_content["description"]}]
+            else:
+                st.error("Title or description not found in response.")
+                return []
+            
         except json.JSONDecodeError as e:
             st.error(f"JSON parsing error: {str(e)}")
             return []
-
-        if 'steps' not in steps:
-            st.error("No 'steps' field found in response.")
-            return []
         
-        return steps['steps']
+        return steps
     
     except Exception as e:
         st.error(f"Error generating flow chart steps: {str(e)}")
