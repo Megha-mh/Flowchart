@@ -28,8 +28,6 @@ class FlowChartStep(BaseModel):
 # Function to generate professional content based on input
 def generate_professional_content(section_title: str, user_input: str) -> str:
     """Simulate generating professional content based on user input."""
-    # You can replace this with an API call to an AI content generator (like OpenAI) for dynamic generation
-    # For now, we return a more formal version of the user input
     if "billing" in section_title.lower():
         return f"The company has implemented a robust billing system. {user_input} This ensures a streamlined invoicing process with multiple payment gateways available to customers."
     elif "place of supply" in section_title.lower():
@@ -120,6 +118,35 @@ class RenderHTML:
                     </div>
                 """
         return category_chart_html
+
+    def generate_flow_chart(self):
+        """Generate the flow chart HTML content."""
+        if not self.flow_chart_steps:
+            return "<p>No flow chart steps available.</p>"
+
+        flow_chart_html = ""
+        try:
+            for index, step in enumerate(self.flow_chart_steps):
+                if index != 0:
+                    flow_chart_html += """<div style="position: relative; text-align: center; font-size: 24px;">
+                                            <div style="width: 0; height: 0; border-left: 10px solid transparent; border-right: 10px solid transparent; border-top: 10px solid #333; margin: 10px auto;"></div>
+                                        </div>"""
+                
+                flow_chart_html += f"""
+                    <div style="padding: 0px 0px 0px 50px;">
+                        <div style="max-width: 90%; padding: 10px 10px 10px 30px; background-color: #f0f0f0; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); text-align: center; position: relative; page-break-inside: avoid;">
+                            <h4 style="margin: 5px 0; color: #333;">{step['title']}</h4>
+                            <div style="margin-top: 5px; font-size: 0.9em; color: #555; text-align: left;">
+                                {step['description'].replace('*', '') if isinstance(step['description'], str) else str(step['description']).replace('*', '').replace('[', '').replace(']', '')}
+                            </div>
+                        </div>
+                    </div>
+                """
+        except Exception as e:
+            st.error(f"Error generating flow chart: {str(e)}")
+            return "<p>Error generating flow chart content.</p>"
+
+        return flow_chart_html
 
     def generate_html(self):
         """Generate the complete HTML output including flow chart and arrow chart."""
