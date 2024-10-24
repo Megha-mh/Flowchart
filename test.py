@@ -48,14 +48,30 @@ def generate_flow_chart_steps(explanation: str) -> List[FlowChartStep]:
             stream=False,
             response_format={"type": "json_object"},
         )
+        
+        # Checking if 'choices' and 'message' keys are present in the response
+        if 'choices' not in chat_completion or not chat_completion['choices']:
+            st.error("No choices returned from Groq API.")
+            return []
+
+        if 'message' not in chat_completion['choices'][0] or 'content' not in chat_completion['choices'][0]['message']:
+            st.error("No content found in Groq API response.")
+            return []
+        
         # Ensure response parsing is handled correctly
         try:
-            steps = json.loads(chat_completion.choices[0].message.content)
+            steps = json.loads(chat_completion['choices'][0]['message']['content'])
         except json.JSONDecodeError as e:
             st.error(f"JSON parsing error: {str(e)}")
             return []
+
+        # Check if 'steps' key exists in the parsed JSON
+        if 'steps' not in steps:
+            st.error("Response does not contain 'steps'.")
+            return []
         
         return steps['steps']
+    
     except Exception as e:
         st.error(f"Error generating flow chart steps: {str(e)}")
         return []
@@ -81,7 +97,7 @@ class RenderHTML:
             "content1": rephrase_business_activity(self.business_activity),  # Use rephrase function here
             
             "title2": self.arrow_chart.get('title2', 'Billing System').title().strip(),
-            "content2": self.arrow_chart.get('content2', '').title().strip(),  # Use dynamic billing system content from input
+            "content2": "The company utilizes an efficient billing system where payments are collected through secure gateways. Clients are invoiced electronically with various payment options available.".title().strip(),
             
             "title3": self.arrow_chart.get('title3', 'Place Of Supply').title().strip(),
             "content3": f"The primary place of supply is {self.arrow_chart.get('content3')}. This location is crucial for ensuring compliance with local tax regulations.".title().strip(),
@@ -114,58 +130,32 @@ class RenderHTML:
         return category_chart_html
 
     def generate_flow_chart(self):
-        """Generate the visual business flowchart, replacing the content with steps and interactions."""
+        """Generate the flow chart HTML content."""
         if not self.flow_chart_steps:
             return "<p>No flow chart steps available.</p>"
 
-        # Updated flowchart format content based on flow_chart_steps input
-        flow_chart_html = """
-        <div style="text-align: center; font-family: Arial, sans-serif;">
-            <h4>Business Process Flow Chart</h4>
-            <div style="display: flex; flex-direction: column; align-items: center;">
-        """
+        flow_chart_html = ""
+        try:
+            for index, step in enumerate(self.flow_chart_steps):
+                if index != 0:
+                    flow_chart_html += """<div style="position: relative; text-align: center; font-size: 24px;">
+                                            <div style="width: 0; height: 0; border-left: 10px solid transparent; border-right: 10px solid transparent; border-top: 10px solid #333; margin: 10px auto;"></div>
+                                        </div>"""
+                
+                flow_chart_html += f"""
+                    <div style="padding: 0px 0px 0px 50px;">
+                        <div style="max-width: 90%; padding: 10px 10px 10px 30px; background-color: #f0f0f0; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); text-align: center; position: relative; page-break-inside: avoid;">
+                            <h4 style="margin: 5px 0; color: #333;">{step['title']}</h4>
+                            <div style="margin-top: 5px; font-size: 0.9em; color: #555; text-align: left;">
+                                {step['description'].replace('*', '') if isinstance(step['description'], str) else str(step['description']).replace('*', '').replace('[', '').replace(']', '')}
+                            </div>
+                        </div>
+                    </div>
+                """
+        except Exception as e:
+            st.error(f"Error generating flow chart: {str(e)}")
+            return "<p>Error generating flow chart content.</p>"
 
-        # Elaborated flowchart content: Reflecting the business process
-        flow_chart_html += """
-        <div style="display: flex; align-items: center; margin-bottom: 20px;">
-            <div style="border: 2px solid #0C6C98; padding: 20px; border-radius: 10px; width: 150px; text-align: center;">
-                How the Business Works
-            </div>
-            <div style="flex-grow: 1; border-top: 2px solid #0C6C98; margin: 0 10px;"></div>
-            <div style="border: 2px solid #0C6C98; padding: 20px; border-radius: 10px; width: 300px; text-align: left;">
-                The business defines its operational framework, core offerings, and target markets. Resources and partnerships are aligned to ensure smooth operations with clear departmental roles.
-            </div>
-        </div>
-        <div style="display: flex; align-items: center; margin-bottom: 20px;">
-            <div style="border: 2px solid #0C6C98; padding: 20px; border-radius: 10px; width: 150px; text-align: center;">
-                Providing Services
-            </div>
-            <div style="flex-grow: 1; border-top: 2px solid #0C6C98; margin: 0 10px;"></div>
-            <div style="border: 2px solid #0C6C98; padding: 20px; border-radius: 10px; width: 300px; text-align: left;">
-                Services are delivered according to client needs, maintaining quality standards and timelines. Departments collaborate to ensure a smooth delivery process.
-            </div>
-        </div>
-        <div style="display: flex; align-items: center; margin-bottom: 20px;">
-            <div style="border: 2px solid #0C6C98; padding: 20px; border-radius: 10px; width: 150px; text-align: center;">
-                Transfer of Product and Supplies
-            </div>
-            <div style="flex-grow: 1; border-top: 2px solid #0C6C98; margin: 0 10px;"></div>
-            <div style="border: 2px solid #0C6C98; padding: 20px; border-radius: 10px; width: 300px; text-align: left;">
-                Products are transferred efficiently, ensuring timely delivery and product quality. Collaboration with logistics, suppliers, and warehouses is essential.
-            </div>
-        </div>
-        <div style="display: flex; align-items: center; margin-bottom: 20px;">
-            <div style="border: 2px solid #0C6C98; padding: 20px; border-radius: 10px; width: 150px; text-align: center;">
-                Receiving the Payment
-            </div>
-            <div style="flex-grow: 1; border-top: 2px solid #0C6C98; margin: 0 10px;"></div>
-            <div style="border: 2px solid #0C6C98; padding: 20px; border-radius: 10px; width: 300px; text-align: left;">
-                Payment is collected using efficient billing systems with multiple payment options. Payments are tracked and reconciled, ensuring accurate financial records.
-            </div>
-        </div>
-        """
-
-        flow_chart_html += "</div></div>"
         return flow_chart_html
 
     def generate_html(self):
@@ -217,7 +207,10 @@ class RenderHTML:
 
                 <!-- Flow Chart -->
                 <div id="flow-chart">
-                    {flow_chart_html}
+                    <h3>Procurement Process:</h3>
+                    <div style="display: flex; flex-direction: column; align-items: center; gap: 20px;">
+                        {flow_chart_html}
+                    </div>
                 </div>
 
                 <p style="margin-top: 100px">I hereby declare that the information is complete and best to my knowledge.</p>
@@ -248,7 +241,7 @@ arrow_chart = {
     "title3": "PLACE OF SUPPLY",
     "title4": "EXPENSES AND COST OF SALES",
     "content1": business_activity_input,  # Directly using the user input for business activity
-    "content2": input_arrowchart_content2,  # Dynamically use input for billing system
+    "content2": input_arrowchart_content2,
     "content3": input_arrowchart_content3,  # Dynamically pass the Place of Supply content
     "content4": input_arrowchart_content4   # Dynamically pass the Expenses and Cost of Sales content
 }
