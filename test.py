@@ -108,13 +108,13 @@ class RenderHTML:
             if title or content:  # Only render if there's valid content
                 category_chart_html += f"""
                     <div style="display: flex; margin-bottom:20px; align-items: center;">
-                        <div style="background-color: #0C6C98; width: 190px; height: 80px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; padding-left: 5px; font-weight: bold;">
+                        <div style="background-color: #0C6C98; width: 190px; min-height: 80px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; padding-left: 5px; font-weight: bold;">
                             {title}
                         </div>
-                        <div style="width: 230px; height: 130px; background-color: #D3D3D3; margin-left: 0px; display: flex; align-items: center; justify-content: flex-start; color: black; font-size: 12px; padding-left: 10px; line-height: 1.5;">
+                        <div style="width: 230px; min-height: 80px; background-color: #D3D3D3; margin-left: 0px; display: flex; align-items: center; justify-content: flex-start; color: black; font-size: 12px; padding-left: 10px; line-height: 1.5;">
                             {content.replace(',', '<br>')}
                         </div>
-                        <div style="width: 0; height: 0; border-top: 80px solid transparent; border-bottom: 80px solid transparent; border-left: 70px solid #D3D3D3;"></div>
+                        <div style="width: 0; height: 0; border-top: 40px solid transparent; border-bottom: 40px solid transparent; border-left: 70px solid #D3D3D3;"></div>
                     </div>
                 """
         return category_chart_html
@@ -175,7 +175,7 @@ class RenderHTML:
                         .set({{
                             margin: 1,
                             filename: 'business_flow_chart.pdf',
-                            html2canvas: {{ scale: 2 }},  # Fixed issue here
+                            html2canvas: {{ scale: 2 }},
                             jsPDF: {{ format: 'a4', orientation: 'portrait' }}
                         }}).save();
                 }}
