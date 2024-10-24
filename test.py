@@ -60,14 +60,25 @@ def generate_flow_chart_steps(explanation: str) -> List[FlowChartStep]:
             stream=False,
             response_format={"type": "json_object"},
         )
+
+        # Debugging: Print the full response to check the structure
+        st.write("API response:", chat_completion)
+
         # Ensure response parsing is handled correctly
         try:
+            # This assumes the response contains a 'steps' field
             steps = json.loads(chat_completion.choices[0].message.content)
+            st.write("Parsed Steps:", steps)  # For debugging
         except json.JSONDecodeError as e:
             st.error(f"JSON parsing error: {str(e)}")
             return []
+
+        if 'steps' not in steps:
+            st.error("No 'steps' field found in response.")
+            return []
         
         return steps['steps']
+    
     except Exception as e:
         st.error(f"Error generating flow chart steps: {str(e)}")
         return []
