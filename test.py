@@ -136,7 +136,7 @@ class RenderHTML:
     def generate_flow_chart(self):
         """Generate the flow chart HTML content."""
         if not self.flow_chart_steps:
-            return "<p>No flow chart steps available.</p>"
+            return ""  # Return empty if no flow chart steps available
 
         flow_chart_html = ""
         try:
@@ -163,9 +163,22 @@ class RenderHTML:
         return flow_chart_html
 
     def generate_html(self):
-        """Generate the complete HTML output including flow chart and arrow chart."""
-        flow_chart_html = self.generate_flow_chart()
+        """Generate the complete HTML output, including arrow chart (and flow chart if steps are available)."""
         arrow_chart_html = self.generate_arrow_chart()
+        
+        # Conditional rendering of flow chart
+        if self.flow_chart_steps:
+            flow_chart_html = self.generate_flow_chart()
+            flow_chart_section = f"""
+            <div id="flow-chart">
+                <h3>Procurement Process:</h3>
+                <div style="display: flex; flex-direction: column; align-items: center; gap: 20px;">
+                    {flow_chart_html}
+                </div>
+            </div>
+            """
+        else:
+            flow_chart_section = ""  # Empty if no flow chart steps are available
 
         arrow_chart_with_page_break = f"""
         <div style="page-break-after: always;">
@@ -209,13 +222,8 @@ class RenderHTML:
                 <!-- Arrow Chart with Page Break -->
                 {arrow_chart_with_page_break}
 
-                <!-- Flow Chart -->
-                <div id="flow-chart">
-                    <h3>Procurement Process:</h3>
-                    <div style="display: flex; flex-direction: column; align-items: center; gap: 20px;">
-                        {flow_chart_html}
-                    </div>
-                </div>
+                <!-- Conditionally include Flow Chart if steps are available -->
+                {flow_chart_section}
 
                 <p style="margin-top: 100px">I hereby declare that the information is complete and best to my knowledge.</p>
                 <p>Authorized Signatory (Sign & Stamp)</p>
