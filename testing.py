@@ -187,7 +187,7 @@ class RenderHTML:
                         .set({{
                             margin: 1,
                             filename: 'business_flow_chart.pdf',
-                            html2canvas: {{ scale: 2 }}},
+                            html2canvas: {{ scale: 2 }},
                             jsPDF: {{ format: 'a4', orientation: 'portrait' }}
                         }}).save();
                 }}
