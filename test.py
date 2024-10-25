@@ -61,27 +61,25 @@ def generate_flow_chart_steps(explanation: str) -> List[FlowChartStep]:
             response_format={"type": "json_object"},
         )
 
-        # Debugging: Print the full response to check the structure
         st.write("API response:", chat_completion)
 
-        # Ensure response parsing is handled correctly
-        try:
-            response_content = json.loads(chat_completion.choices[0].message.content)
-            st.write("Parsed Content:", response_content)  # For debugging
-            
-            # Check if title and description are available and use them to construct a step
-            if "title" in response_content and "description" in response_content:
-                steps = [{"title": response_content["title"], "description": response_content["description"]}]
-            else:
-                st.error("Title or description not found in response.")
-                return []
-            
-        except json.JSONDecodeError as e:
-            st.error(f"JSON parsing error: {str(e)}")
+        # Try extracting the first message from the completion
+        if "choices" in chat_completion:
+            response_content = json.loads(chat_completion["choices"][0]["message"]["content"])
+            steps = []
+            for step in response_content:
+                steps.append({
+                    "title": step.get("title", "Untitled Step"),
+                    "description": step.get("description", "No description provided.")
+                })
+            return steps
+        else:
+            st.error("No choices found in API response.")
             return []
-        
-        return steps
-    
+
+    except json.JSONDecodeError as e:
+        st.error(f"JSON parsing error: {str(e)}")
+        return []
     except Exception as e:
         st.error(f"Error generating flow chart steps: {str(e)}")
         return []
@@ -151,7 +149,7 @@ class RenderHTML:
                         <div style="max-width: 90%; padding: 10px 10px 10px 30px; background-color: #f0f0f0; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); text-align: center; position: relative; page-break-inside: avoid;">
                             <h4 style="margin: 5px 0; color: #333;">{step['title']}</h4>
                             <div style="margin-top: 5px; font-size: 0.9em; color: #555; text-align: left;">
-                                {step['description'].replace('*', '') if isinstance(step['description'], str) else str(step['description']).replace('*', '').replace('[', '').replace(']', '')}
+                                {step['description'].replace('*', '')}
                             </div>
                         </div>
                     </div>
@@ -189,7 +187,7 @@ class RenderHTML:
                         .set({{
                             margin: 1,
                             filename: 'business_flow_chart.pdf',
-                            html2canvas: {{ scale: 2 }},
+                            html2canvas: {{ scale: 2 }}},
                             jsPDF: {{ format: 'a4', orientation: 'portrait' }}
                         }}).save();
                 }}
@@ -233,21 +231,21 @@ st.title("Business Flow Chart Renderer")
 
 # Input fields
 name_input = st.text_input("Enter the name of the company:", "")
-business_description_input = st.text_area("Enter the Company Description:")  # New input for company description
-business_activity_input = st.text_area("Enter the Business Activity:")  # New input for business activity
+business_description_input = st.text_area("Enter the Company Description:")
+business_activity_input = st.text_area("Enter the Business Activity:")
 input_arrowchart_content2 = st.text_input('Billing system (how payment is collected from customers)', key="input_arrowchart_content2")
-input_arrowchart_content3 = st.text_input('Enter the Place of Supply', key="input_arrowchart_content3")  # Updated Place of Supply
-input_arrowchart_content4 = st.text_input('Enter the content For EXPENSES AND COST OF SALES', key="input_arrowchart_content4")  # Updated for expenses
+input_arrowchart_content3 = st.text_input('Enter the Place of Supply', key="input_arrowchart_content3")
+input_arrowchart_content4 = st.text_input('Enter the content For EXPENSES AND COST OF SALES', key="input_arrowchart_content4")
 
 arrow_chart = {
     "title1": "BUSINESS",
     "title2": "Billing System",
     "title3": "PLACE OF SUPPLY",
     "title4": "EXPENSES AND COST OF SALES",
-    "content1": business_activity_input,  # Directly using the user input for business activity
+    "content1": business_activity_input,
     "content2": input_arrowchart_content2,
-    "content3": input_arrowchart_content3,  # Dynamically pass the Place of Supply content
-    "content4": input_arrowchart_content4   # Dynamically pass the Expenses and Cost of Sales content
+    "content3": input_arrowchart_content3,
+    "content4": input_arrowchart_content4
 }
 
 st.subheader("Flow Chart Steps")
@@ -280,10 +278,10 @@ if 'flow_chart_steps' in st.session_state:
     if st.button("Render Flow Chart"):
         html_generator = RenderHTML(
             name=name_input,
-            description=business_description_input,  # Pass company description input
+            description=business_description_input,
             flow_chart_steps=st.session_state['flow_chart_steps'],
             arrow_chart=arrow_chart,
-            business_activity=business_activity_input  # Pass the business activity input
+            business_activity=business_activity_input
         )
         html_output = html_generator.generate_html()
         components.html(html_output, height=800, scrolling=True)
