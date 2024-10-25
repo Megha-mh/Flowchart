@@ -25,6 +25,18 @@ class FlowChartStep(BaseModel):
     title: str
     description: str
 
+# Function to generate professional content based on input
+def generate_professional_content(section_title: str, user_input: str) -> str:
+    """Simulate generating professional content based on user input."""
+    if "billing" in section_title.lower():
+        return f"The company has implemented a robust billing system. {user_input} This ensures a streamlined invoicing process with multiple payment gateways available to customers."
+    elif "place of supply" in section_title.lower():
+        return f"The primary place of supply is {user_input}, which ensures compliance with the relevant regional tax laws and regulations."
+    elif "expenses and cost of sales" in section_title.lower():
+        return f"The company manages expenses like {user_input}, ensuring that the cost of sales is minimized while maximizing profitability."
+    else:
+        return f"{user_input}"  # Default fallback if no match
+
 def generate_flow_chart_steps(explanation: str) -> List[FlowChartStep]:
     try:
         # API call to Groq
@@ -48,50 +60,54 @@ def generate_flow_chart_steps(explanation: str) -> List[FlowChartStep]:
             stream=False,
             response_format={"type": "json_object"},
         )
+
+        # Debugging: Print the full response to check the structure
+        st.write("API response:", chat_completion)
+
         # Ensure response parsing is handled correctly
         try:
-            steps = json.loads(chat_completion.choices[0].message.content)
+            response_content = json.loads(chat_completion.choices[0].message.content)
+            st.write("Parsed Content:", response_content)  # For debugging
+            
+            # Check if title and description are available and use them to construct a step
+            if "title" in response_content and "description" in response_content:
+                steps = [{"title": response_content["title"], "description": response_content["description"]}]
+            else:
+                st.error("Title or description not found in response.")
+                return []
+            
         except json.JSONDecodeError as e:
             st.error(f"JSON parsing error: {str(e)}")
             return []
         
-        return steps['steps']
+        return steps
+    
     except Exception as e:
         st.error(f"Error generating flow chart steps: {str(e)}")
         return []
 
-def rephrase_business_activity(activity: str) -> str:
-    """Rephrase the business activity to make it clearer and more formal."""
-    # Mapping common phrases to more formal explanations
-    if "website" in activity.lower() and "digital" in activity.lower():
-        return "The business specializes in providing website development and digital services, offering tailored solutions to meet client needs."
-    # You can add more conditional rephrasing based on different inputs.
-    return activity  # Return as-is if no rephrasing is found.
-
 class RenderHTML:
-    def __init__(self, name, flow_chart_steps, arrow_chart, business_activity):
+    def __init__(self, name, description, flow_chart_steps, arrow_chart, business_activity):
         self.name = name
+        self.description = description  # New field for company description
         self.flow_chart_steps = flow_chart_steps if flow_chart_steps else []  # Ensure flow_chart_steps is a list
         self.arrow_chart = arrow_chart
         self.business_activity = business_activity  # The input business activity is directly passed
 
     def improve_arrow_chart_content(self):
-        """Modify and improve the arrow chart content, making it more professional and capitalized."""
+        """Modify and improve the arrow chart content based on user inputs."""
         return {
-            # Rephrase the input for Business Activity to ensure clarity and formality
             "title1": self.arrow_chart.get('title1', 'Business Activity').title().strip(),
-            "content1": rephrase_business_activity(self.business_activity),  # Use rephrase function here
-            
+            "content1": generate_professional_content('Business Activity', self.business_activity),  # Use dynamic generation
+
             "title2": self.arrow_chart.get('title2', 'Billing System').title().strip(),
-            "content2": "The company utilizes an efficient billing system where payments are collected through secure gateways. Clients are invoiced electronically with various payment options available.".title().strip(),
+            "content2": generate_professional_content('Billing System', self.arrow_chart.get('content2')),  # Dynamic billing system content
             
-            # Dynamic Place of Supply with elaboration
             "title3": self.arrow_chart.get('title3', 'Place Of Supply').title().strip(),
-            "content3": f"The primary place of supply is {self.arrow_chart.get('content3')}. This location is crucial for ensuring compliance with local tax regulations.".title().strip(),
+            "content3": generate_professional_content('Place of Supply', self.arrow_chart.get('content3')),  # Dynamic place of supply content
             
-            # Dynamic Expenses and Cost of Sales with elaboration
             "title4": self.arrow_chart.get('title4', 'Expenses And Cost Of Sales').title().strip(),
-            "content4": f"The company manages expenses such as {self.arrow_chart.get('content4')}, ensuring cost-effective practices to maximize profitability.".title().strip(),
+            "content4": generate_professional_content('Expenses and Cost of Sales', self.arrow_chart.get('content4')),  # Dynamic expense content
         }
 
     def generate_arrow_chart(self):
@@ -106,13 +122,13 @@ class RenderHTML:
             if title or content:  # Only render if there's valid content
                 category_chart_html += f"""
                     <div style="display: flex; margin-bottom:20px; align-items: center;">
-                        <div style="background-color: #0C6C98; width: 190px; height: 80px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; padding-left: 5px; font-weight: bold;">
+                        <div style="background-color: #0C6C98; width: 190px; min-height: 80px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; padding-left: 5px; font-weight: bold;">
                             {title}
                         </div>
-                        <div style="width: 230px; height: 130px; background-color: #D3D3D3; margin-left: 0px; display: flex; align-items: center; justify-content: flex-start; color: black; font-size: 12px; padding-left: 10px; line-height: 1.5;">
+                        <div style="width: 230px; min-height: 80px; background-color: #D3D3D3; margin-left: 0px; display: flex; align-items: center; justify-content: flex-start; color: black; font-size: 12px; padding-left: 10px; line-height: 1.5;">
                             {content.replace(',', '<br>')}
                         </div>
-                        <div style="width: 0; height: 0; border-top: 80px solid transparent; border-bottom: 80px solid transparent; border-left: 70px solid #D3D3D3;"></div>
+                        <div style="width: 0; height: 0; border-top: 40px solid transparent; border-bottom: 40px solid transparent; border-left: 70px solid #D3D3D3;"></div>
                     </div>
                 """
         return category_chart_html
@@ -151,7 +167,6 @@ class RenderHTML:
         flow_chart_html = self.generate_flow_chart()
         arrow_chart_html = self.generate_arrow_chart()
 
-        # Add page break after arrow chart if arrow_chart_html exists
         arrow_chart_with_page_break = f"""
         <div style="page-break-after: always;">
             {arrow_chart_html}
@@ -174,7 +189,7 @@ class RenderHTML:
                         .set({{
                             margin: 1,
                             filename: 'business_flow_chart.pdf',
-                            html2canvas: {{ scale: 2 }}),
+                            html2canvas: {{ scale: 2 }},
                             jsPDF: {{ format: 'a4', orientation: 'portrait' }}
                         }}).save();
                 }}
@@ -185,13 +200,15 @@ class RenderHTML:
                 <h3 style="margin-top: 20px; text-align: center;">{self.name}</h3>
                 <h5>Date: {date.today().strftime("%d/%m/%Y")}</h5>
                 <h4>Subject: Business Flow Chart</h4>
-                <div style="font-size: 0.9em;">
-                    <p>The business activity is as follows: {rephrase_business_activity(self.business_activity)}</p>
-                </div>
                 
+                <!-- Introduction Section with Company Description -->
+                <div style="font-size: 0.9em;">
+                    <p>{self.description}</p>
+                </div>
+
                 <!-- Arrow Chart with Page Break -->
                 {arrow_chart_with_page_break}
-                
+
                 <!-- Flow Chart -->
                 <div id="flow-chart">
                     <h3>Procurement Process:</h3>
@@ -199,10 +216,12 @@ class RenderHTML:
                         {flow_chart_html}
                     </div>
                 </div>
-                
+
                 <p style="margin-top: 100px">I hereby declare that the information is complete and best to my knowledge.</p>
                 <p>Authorized Signatory (Sign & Stamp)</p>
             </div>
+
+            <!-- Download button -->
             <button onclick="downloadPDF()">Download PDF</button>
         </body>
         </html>
@@ -214,6 +233,7 @@ st.title("Business Flow Chart Renderer")
 
 # Input fields
 name_input = st.text_input("Enter the name of the company:", "")
+business_description_input = st.text_area("Enter the Company Description:")  # New input for company description
 business_activity_input = st.text_area("Enter the Business Activity:")  # New input for business activity
 input_arrowchart_content2 = st.text_input('Billing system (how payment is collected from customers)', key="input_arrowchart_content2")
 input_arrowchart_content3 = st.text_input('Enter the Place of Supply', key="input_arrowchart_content3")  # Updated Place of Supply
@@ -248,11 +268,9 @@ if 'flow_chart_steps' in st.session_state:
         description_input = st.text_area(f"Step {i+1} Description", value=step['description'], key=f"description_{i}")
         edited_steps.append({"title": title_input, "description": description_input})
         
-        # Add "Add Step" button after each step
         if st.button(f"Add Step after Step {i+1}"):
             edited_steps.insert(i+1, {"title": "", "description": ""})
 
-        # Add "Delete Step" button to remove a step
         if st.button(f"Delete Step {i+1}"):
             edited_steps.pop(i)
 
@@ -262,6 +280,7 @@ if 'flow_chart_steps' in st.session_state:
     if st.button("Render Flow Chart"):
         html_generator = RenderHTML(
             name=name_input,
+            description=business_description_input,  # Pass company description input
             flow_chart_steps=st.session_state['flow_chart_steps'],
             arrow_chart=arrow_chart,
             business_activity=business_activity_input  # Pass the business activity input
