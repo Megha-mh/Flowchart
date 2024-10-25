@@ -66,7 +66,7 @@ class RenderHTML:
         }
 
     def generate_arrow_chart(self):
-        """Generate the improved arrow chart HTML."""
+        """Generate the improved arrow chart HTML with bold headings for bullet points."""
         improved_arrow_chart = self.improve_arrow_chart_content()
 
         category_chart_html = ""
@@ -75,13 +75,19 @@ class RenderHTML:
             content = improved_arrow_chart.get(f'content{i}', '').strip()
             
             if title or content:
+                # Split content into bullet points and apply formatting for bold headings
+                bullet_points = content.split('•')
+                formatted_content = "".join(
+                    f"<li><strong>{point.split(':')[0].strip()}</strong>: {':'.join(point.split(':')[1:]).strip()}</li>"
+                    for point in bullet_points if point.strip()
+                )
                 category_chart_html += f"""
                     <div style="display: flex; margin-bottom:20px; align-items: center;">
                         <div style="background-color: #0C6C98; width: 190px; min-height: 80px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; padding-left: 5px; font-weight: bold;">
                             {title}
                         </div>
                         <div style="width: 230px; min-height: 80px; background-color: #D3D3D3; margin-left: 0px; display: flex; align-items: center; justify-content: flex-start; color: black; font-size: 12px; padding-left: 10px; line-height: 1.5;">
-                            {content.replace(',', '<br>')}
+                            <ul style="list-style: none; padding: 0; margin: 0;">{formatted_content}</ul>
                         </div>
                         <div style="width: 0; height: 0; border-top: 40px solid transparent; border-bottom: 40px solid transparent; border-left: 70px solid #D3D3D3;"></div>
                     </div>
@@ -89,7 +95,7 @@ class RenderHTML:
         return category_chart_html
 
     def generate_business_flow_chart(self):
-        """Generate the business flow chart HTML content."""
+        """Generate the business flow chart HTML content with arrows between steps."""
         if not self.business_flow_steps:
             return "<p>No business flow steps available.</p>"
 
@@ -101,6 +107,12 @@ class RenderHTML:
                     <p style="font-size: 0.9em; color: #555;">{step['description']}</p>
                 </div>
             """
+            if index < len(self.business_flow_steps) - 1:
+                flow_chart_html += """
+                    <div style="text-align: center; font-size: 24px; margin: 10px 0;">
+                        &#x2193;
+                    </div>
+                """
         return flow_chart_html
 
     def generate_html(self):
@@ -165,13 +177,13 @@ st.title("Business Flow Chart Renderer")
 # Input fields
 name_input = st.text_input("Enter the name of the company:", "")
 business_description_input = st.text_area("Enter the Company Description:")
-business_activity_input = st.text_area("Enter the Business Activity:")
+business_activity_input = st.text_area("Enter the Business Activity (bullet points with headings):")
 input_arrowchart_content2 = st.text_input('Billing system (how payment is collected from customers)', key="input_arrowchart_content2")
 input_arrowchart_content3 = st.text_input('Enter the Place of Supply', key="input_arrowchart_content3")
 input_arrowchart_content4 = st.text_input('Enter the content For EXPENSES AND COST OF SALES', key="input_arrowchart_content4")
 
 arrow_chart = {
-    "title1": "Services provided",
+    "title1": "BUSINESS",
     "title2": "Billing System",
     "title3": "PLACE OF SUPPLY",
     "title4": "EXPENSES AND COST OF SALES",
