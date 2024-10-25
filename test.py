@@ -183,7 +183,7 @@ input_arrowchart_content3 = st.text_input('Enter the Place of Supply', key="inpu
 input_arrowchart_content4 = st.text_input('Enter the content For EXPENSES AND COST OF SALES', key="input_arrowchart_content4")
 
 arrow_chart = {
-    "title1": "Services Provided",
+    "title1": "BUSINESS",
     "title2": "Billing System",
     "title3": "PLACE OF SUPPLY",
     "title4": "EXPENSES AND COST OF SALES",
