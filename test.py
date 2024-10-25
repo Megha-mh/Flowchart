@@ -181,24 +181,29 @@ arrow_chart = {
     "content4": input_arrowchart_content4
 }
 
-# Adding business flow steps
-st.subheader("Add Steps for Business Flow Chart")
-step_title = st.text_input("Step Title")
-step_description = st.text_area("Step Description")
+# Select number of business flow steps
+num_steps = st.number_input("How many steps do you want to add to the Business Flow Chart?", min_value=1, max_value=20, value=1, step=1)
 
-if st.button("Add Step"):
-    st.session_state['business_flow_steps'].append({
-        "title": step_title,
-        "description": step_description
-    })
-    st.success("Step added successfully")
+# Collect business flow steps
+st.subheader("Add Steps for Business Flow Chart")
+for i in range(num_steps):
+    step_title = st.text_input(f"Step {i + 1} Title", key=f"title_{i}")
+    step_description = st.text_area(f"Step {i + 1} Description", key=f"description_{i}")
+
+    # Store each step
+    if st.button(f"Add Step {i + 1}"):
+        st.session_state['business_flow_steps'].append({
+            "title": step_title,
+            "description": step_description
+        })
+        st.success(f"Step {i + 1} added successfully")
 
 # Display and edit flow steps
 if st.session_state['business_flow_steps']:
     st.subheader("Edit Business Flow Steps")
     for i, step in enumerate(st.session_state['business_flow_steps']):
-        st.text_input(f"Step {i+1} Title", value=step['title'], key=f"title_{i}")
-        st.text_area(f"Step {i+1} Description", value=step['description'], key=f"description_{i}")
+        st.text_input(f"Step {i+1} Title", value=step['title'], key=f"edit_title_{i}")
+        st.text_area(f"Step {i+1} Description", value=step['description'], key=f"edit_description_{i}")
 
     if st.button("Render Flow Chart"):
         html_generator = RenderHTML(
